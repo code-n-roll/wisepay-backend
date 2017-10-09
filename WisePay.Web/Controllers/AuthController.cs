@@ -41,29 +41,29 @@ namespace WisePay.Web.Controllers
             }
 
             var claims = await _userManager.GetClaimsAsync(user);
+            claims.Add(new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()));
 
             var now = DateTime.UtcNow;
             var jwt = new JwtSecurityToken(
-                issuer: AuthOptions.ISSUER,
-                audience: AuthOptions.AUDIENCE,
+                issuer: AuthOptions.Issuer,
+                audience: AuthOptions.Audience,
                 notBefore: now,
                 claims: claims,
-                expires: now.Add(TimeSpan.FromMinutes(AuthOptions.LIFETIME)),
+                expires: now.Add(TimeSpan.FromDays(AuthOptions.Lifetime)),
                 signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
 
             var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
 
             var response = new
             {
-                access_token = encodedJwt,
-                email = email
+                access_token = encodedJwt
             };
 
             return Json(response);
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register(RegisterModel registerModel)
+        public async Task<IActionResult> Register([FromBody]RegisterModel registerModel)
         {
             if (registerModel.Password != registerModel.PasswordConfirmation)
             {
@@ -84,18 +84,6 @@ namespace WisePay.Web.Controllers
             }
 
             return Ok();
-        }
-
-        private ClaimsIdentity GetIdentity(User user)
-        {
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimsIdentity.DefaultNameClaimType, user.Email)
-            };
-            var claimsIdentity =
-                new ClaimsIdentity(claims, "Token", ClaimsIdentity.DefaultNameClaimType,
-            ClaimsIdentity.DefaultRoleClaimType);
-            return claimsIdentity;
         }
 
         private IActionResult GetErrorResult(IdentityResult result)
