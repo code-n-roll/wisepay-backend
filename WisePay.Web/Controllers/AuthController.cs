@@ -1,65 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Net;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
 using WisePay.Entities;
 using WisePay.Web.Auth;
 
 namespace WisePay.Web.Controllers
 {
-    [Route("api/auth")]
-    public class AuthController : Controller
+    [Route("api/account")]
+    public class AccountController : Controller
     {
         private UserManager<User> _userManager;
 
-        public AuthController(UserManager<User> userManager)
+        public AccountController(UserManager<User> userManager)
         {
             _userManager = userManager;
-        }
-
-        [HttpPost("token")]
-        public async Task<IActionResult> Token(string email, string password)
-        {
-            var user = await _userManager.FindByEmailAsync(email);
-            if (user == null)
-            {
-                return BadRequest("Invalid email");
-            }
-
-            var isPasswordCorrect = await _userManager.CheckPasswordAsync(user, password);
-            if (!isPasswordCorrect)
-            {
-                return BadRequest("Invalid password");
-            }
-
-            var claims = await _userManager.GetClaimsAsync(user);
-            claims.Add(new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()));
-
-            var now = DateTime.UtcNow;
-            var jwt = new JwtSecurityToken(
-                issuer: AuthOptions.Issuer,
-                audience: AuthOptions.Audience,
-                notBefore: now,
-                claims: claims,
-                expires: now.Add(TimeSpan.FromDays(AuthOptions.Lifetime)),
-                signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
-
-            var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
-
-            var response = new
-            {
-                access_token = encodedJwt
-            };
-
-            return Json(response);
         }
 
         [HttpPost("register")]
