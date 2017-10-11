@@ -1,11 +1,9 @@
 ﻿using System;
+using Microsoft.AspNetCore.Identity;
 
 namespace WisePay.Entities
 {
-    public class User
+    public class User : IdentityUser<int>
     {
-        public int Id { get; set; }
-        public string Email { get; set; }
-        public string PasswordHash { get; set; }
     }
 }
