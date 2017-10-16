@@ -38,6 +38,8 @@ namespace WisePay
 
             var serviceProvider = services.BuildServiceProvider();
 
+            services.AddCors();
+
             services
                 .AddIdentity<User, Role>()
                 .AddEntityFrameworkStores<WiseContext>()
@@ -54,11 +56,11 @@ namespace WisePay
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuer = true,
-                        ValidIssuer = AuthOptions.Issuer,
+                        ValidIssuer = AuthConfig.Issuer,
                         ValidateAudience = true,
-                        ValidAudience = AuthOptions.Audience,
+                        ValidAudience = AuthConfig.Audience,
                         ValidateLifetime = true,
-                        IssuerSigningKey = AuthOptions.SymmetricSecurityKey,
+                        IssuerSigningKey = AuthConfig.SymmetricSecurityKey,
                         ValidateIssuerSigningKey = true,
                     };
                 });
@@ -74,6 +76,7 @@ namespace WisePay
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseCors(builder => builder.AllowAnyOrigin());
             app.UseAuthentication();
             app.UseMvc();
         }

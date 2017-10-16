@@ -21,15 +21,15 @@ namespace WisePay.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GenerateToken(string email, string password)
+        public async Task<IActionResult> GenerateToken([FromBody]LoginModel model)
         {
-            var user = await _userManager.FindByEmailAsync(email);
+            var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
             {
                 return BadRequest("Invalid email");
             }
 
-            var isPasswordCorrect = await _userManager.CheckPasswordAsync(user, password);
+            var isPasswordCorrect = await _userManager.CheckPasswordAsync(user, model.Password);
             if (!isPasswordCorrect)
             {
                 return BadRequest("Invalid password");
@@ -40,18 +40,19 @@ namespace WisePay.Web.Controllers
 
             var now = DateTime.UtcNow;
             var jwt = new JwtSecurityToken(
-                            issuer: AuthOptions.Issuer,
-                            audience: AuthOptions.Audience,
+                            issuer: AuthConfig.Issuer,
+                            audience: AuthConfig.Audience,
                             notBefore: now,
                             claims: claims,
-                            expires: now.Add(TimeSpan.FromDays(AuthOptions.Lifetime)),
-                            signingCredentials: new SigningCredentials(AuthOptions.SymmetricSecurityKey, SecurityAlgorithms.HmacSha256));
+                            expires: now.Add(TimeSpan.FromDays(AuthConfig.Lifetime)),
+                            signingCredentials: new SigningCredentials(AuthConfig.SymmetricSecurityKey, SecurityAlgorithms.HmacSha256));
 
             var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
 
             var response = new
             {
-                access_token = encodedJwt
+                access_token = encodedJwt,
+                email = user.Email
             };
 
             return Json(response);

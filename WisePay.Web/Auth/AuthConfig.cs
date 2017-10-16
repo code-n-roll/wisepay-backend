@@ -7,7 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace WisePay.Web.Auth
 {
-    public class AuthOptions
+    public class AuthConfig
     {
         public const string Issuer = "WisePay.Web.Token";
         public const string Audience = "WisePay.Client";
