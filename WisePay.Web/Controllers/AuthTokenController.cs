@@ -11,7 +11,7 @@ using WisePay.Web.Core.ClientInteraction;
 
 namespace WisePay.Web.Controllers
 {
-    [Route("api/token")]
+    [Route("api/sign_in")]
     public class AuthTokenController : Controller
     {
         private UserManager<User> _userManager;
