@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using WisePay.Web.Auth;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using WisePay.Web.Internals;
 
 namespace WisePay
 {
@@ -33,10 +34,7 @@ namespace WisePay
         public void ConfigureServices(IServiceCollection services)
         {
             var pgConnectionString = Configuration.GetConnectionString("PgConnection");
-
             services.AddDbContext<WiseContext>(options => options.UseNpgsql(pgConnectionString));
-
-            var serviceProvider = services.BuildServiceProvider();
 
             services.AddCors();
 
@@ -64,6 +62,8 @@ namespace WisePay
                         ValidateIssuerSigningKey = true,
                     };
                 });
+
+            services.AddInAppServices();
 
             services.AddMvc();
         }

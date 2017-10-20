@@ -1,8 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using WisePay.Entities;
 using WisePay.Web.Auth;
+using WisePay.Web.Core.ClientInteraction;
 
 namespace WisePay.Web.Controllers
 {
@@ -10,10 +13,12 @@ namespace WisePay.Web.Controllers
     public class AccountController : Controller
     {
         private UserManager<User> _userManager;
+        private AuthTokenService _tokenService;
 
-        public AccountController(UserManager<User> userManager)
+        public AccountController(UserManager<User> userManager, AuthTokenService tokenService)
         {
             _userManager = userManager;
+            _tokenService = tokenService;
         }
 
         [HttpPost("register")]
@@ -21,7 +26,11 @@ namespace WisePay.Web.Controllers
         {
             if (registerModel.Password != registerModel.PasswordConfirmation)
             {
-                return BadRequest("Passwords don't match");
+                return BadRequest(new ErrorResponse
+                {
+                    Code = ErrorCode.InvalidCredentials,
+                    Message = "Passwords don't match"
+                });
             }
 
             var newUser = new User()
@@ -37,36 +46,60 @@ namespace WisePay.Web.Controllers
                 return GetErrorResult(result);
             }
 
-            return Ok();
+            var response = new
+            {
+                access_token = await _tokenService.GenerateToken(newUser),
+                email = newUser.Email
+            };
+
+            return Ok(response);
         }
 
         private IActionResult GetErrorResult(IdentityResult result)
         {
             if (result == null)
             {
-                return StatusCode(500);
+                return BadRequest(new ErrorResponse
+                {
+                    Code = ErrorCode.ServerError
+                });
             }
 
-            if (!result.Succeeded)
+            if (result.Errors != null)
             {
-                if (result.Errors != null)
+                var errorResponse = new ErrorResponse();
+
+                if (result.Errors.Count() == 1)
                 {
+                    errorResponse.Code = ErrorCode.AuthError;
+                    errorResponse.Message = result.Errors.ElementAt(0).Description;
+                }
+                else
+                {
+                    errorResponse.Code = ErrorCode.MultipleErrors;
+                    var innerErrors = new List<ErrorResponse>();
+
                     foreach (var error in result.Errors)
                     {
-                        ModelState.AddModelError("", error.Description);
+                        innerErrors.Add(new ErrorResponse
+                        {
+                            Code = ErrorCode.AuthError,
+                            Message = error.Description
+                        });
                     }
+
+                    errorResponse.InnerErrors = innerErrors;
                 }
 
-                if (ModelState.IsValid)
-                {
-                    return BadRequest();
-                }
-
-                return BadRequest(ModelState);
+                return BadRequest(errorResponse);
             }
-
-            return null;
+            else
+            {
+                return BadRequest(new ErrorResponse
+                {
+                    Code = ErrorCode.ServerError
+                });
+            }
         }
-
     }
 }
