@@ -10,9 +10,20 @@ namespace WisePay.DataAccess
     {
         public WiseContext(DbContextOptions<WiseContext> options) : base(options) { }
 
+        public DbSet<Purchase> Purchases { get; set; }
+        public DbSet<Team> Teams { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
+            builder.Entity<UserTeam>()
+                .ToTable("UserTeams")
+                .HasKey(t => new { t.UserId, t.TeamId });
+
+            builder.Entity<UserPurchase>()
+                .ToTable("UserPurchases")
+                .HasKey(t => new { t.UserId, t.PurchaseId });
         }
     }
 }
