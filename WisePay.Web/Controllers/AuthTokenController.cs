@@ -7,6 +7,7 @@ using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
 using WisePay.Web.Auth;
 using Microsoft.IdentityModel.Tokens;
+using WisePay.Web.Core.ClientInteraction;
 
 namespace WisePay.Web.Controllers
 {
@@ -14,44 +15,43 @@ namespace WisePay.Web.Controllers
     public class AuthTokenController : Controller
     {
         private UserManager<User> _userManager;
+        private AuthTokenService _tokenService;
 
-        public AuthTokenController(UserManager<User> userManager)
+        public AuthTokenController(UserManager<User> userManager, AuthTokenService tokenService)
         {
             _userManager = userManager;
+            _tokenService = tokenService;
         }
 
         [HttpPost]
-        public async Task<IActionResult> GenerateToken(string email, string password)
+        public async Task<IActionResult> GenerateToken([FromBody]LoginModel model)
         {
-            var user = await _userManager.FindByEmailAsync(email);
+            var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
             {
-                return BadRequest("Invalid email");
+                return BadRequest(new ErrorResponse
+                {
+                    Code = ErrorCode.InvalidCredentials,
+                    Message = "Invalid email"
+                });
             }
 
-            var isPasswordCorrect = await _userManager.CheckPasswordAsync(user, password);
+            var isPasswordCorrect = await _userManager.CheckPasswordAsync(user, model.Password);
             if (!isPasswordCorrect)
             {
-                return BadRequest("Invalid password");
+                return BadRequest(new ErrorResponse
+                {
+                    Code = ErrorCode.InvalidCredentials,
+                    Message = "Invalid password"
+                });
             }
 
-            var claims = await _userManager.GetClaimsAsync(user);
-            claims.Add(new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()));
-
-            var now = DateTime.UtcNow;
-            var jwt = new JwtSecurityToken(
-                            issuer: AuthOptions.Issuer,
-                            audience: AuthOptions.Audience,
-                            notBefore: now,
-                            claims: claims,
-                            expires: now.Add(TimeSpan.FromDays(AuthOptions.Lifetime)),
-                            signingCredentials: new SigningCredentials(AuthOptions.SymmetricSecurityKey, SecurityAlgorithms.HmacSha256));
-
-            var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
+            var token = await _tokenService.GenerateToken(user);
 
             var response = new
             {
-                access_token = encodedJwt
+                access_token = token,
+                email = user.Email
             };
 
             return Json(response);
