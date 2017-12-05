@@ -12,6 +12,8 @@ namespace WisePay.Web.Core.ClientInteraction
 
         AuthError,
         InvalidCredentials,
-        ValidationError
+        ValidationError,
+
+        NotFound
     }
 }

@@ -13,6 +13,10 @@ namespace WisePay.DataAccess
         public DbSet<Purchase> Purchases { get; set; }
         public DbSet<Team> Teams { get; set; }
 
+        // Connection tables
+        public DbSet<UserTeam> UserTeams { get; set; }
+        public DbSet<UserPurchase> UserPurchases { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
