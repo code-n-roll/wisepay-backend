@@ -34,6 +34,7 @@ namespace WisePay
         public void ConfigureServices(IServiceCollection services)
         {
             var pgConnectionString = Configuration.GetConnectionString("PgConnection");
+
             services.AddDbContext<WiseContext>(options => options.UseNpgsql(pgConnectionString));
 
             services.AddCors();
