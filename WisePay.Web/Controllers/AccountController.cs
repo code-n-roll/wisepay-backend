@@ -77,11 +77,11 @@ namespace WisePay.Web.Controllers
                 else
                 {
                     errorResponse.Code = ErrorCode.MultipleErrors;
-                    var innerErrors = new List<ErrorResponse>();
+                    var innerErrors = new List<InnerError>();
 
                     foreach (var error in result.Errors)
                     {
-                        innerErrors.Add(new ErrorResponse
+                        innerErrors.Add(new InnerError
                         {
                             Code = ErrorCode.AuthError,
                             Message = error.Description

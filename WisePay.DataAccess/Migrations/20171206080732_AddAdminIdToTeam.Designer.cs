@@ -11,9 +11,10 @@ using WisePay.DataAccess;
 namespace WisePay.DataAccess.Migrations
 {
     [DbContext(typeof(WiseContext))]
-    partial class WiseContextModelSnapshot : ModelSnapshot
+    [Migration("20171206080732_AddAdminIdToTeam")]
+    partial class AddAdminIdToTeam
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

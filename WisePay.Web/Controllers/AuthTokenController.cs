@@ -8,10 +8,11 @@ using System.IdentityModel.Tokens.Jwt;
 using WisePay.Web.Auth;
 using Microsoft.IdentityModel.Tokens;
 using WisePay.Web.Core.ClientInteraction;
+using WisePay.Web.Internals;
 
 namespace WisePay.Web.Controllers
 {
-    [Route("api/token")]
+    [Route("api/sign_in")]
     public class AuthTokenController : Controller
     {
         private UserManager<User> _userManager;
@@ -29,21 +30,13 @@ namespace WisePay.Web.Controllers
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
             {
-                return BadRequest(new ErrorResponse
-                {
-                    Code = ErrorCode.InvalidCredentials,
-                    Message = "Invalid email"
-                });
+                throw new ApiException(400, "Invalid email", ErrorCode.InvalidCredentials);
             }
 
             var isPasswordCorrect = await _userManager.CheckPasswordAsync(user, model.Password);
             if (!isPasswordCorrect)
             {
-                return BadRequest(new ErrorResponse
-                {
-                    Code = ErrorCode.InvalidCredentials,
-                    Message = "Invalid password"
-                });
+                throw new ApiException(400, "Invalid password", ErrorCode.InvalidCredentials);
             }
 
             var token = await _tokenService.GenerateToken(user);

@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using WisePay.Entities;
 using WisePay.Web.Core.ClientInteraction;
+using WisePay.Web.Internals;
 using WisePay.Web.Teams;
 using WisePay.Web.Users;
 
@@ -18,106 +20,54 @@ namespace WisePay.Web.Controllers
     [Authorize]
     public class UsersController : Controller
     {
-        private UserManager<User> _userManager;
-        private UsersService _usersService;
-        private TeamsService _teamsService;
+        private readonly UserManager<User> _userManager;
+        private readonly IMapper _mapper;
+        private readonly UsersService _usersService;
+        private readonly TeamsService _teamsService;
 
         public UsersController(
             UsersService usersService,
             TeamsService teamsService,
-            UserManager<User> userManager)
+            UserManager<User> userManager,
+            IMapper mapper)
         {
             _userManager = userManager;
             _usersService = usersService;
             _teamsService = teamsService;
+            _mapper = mapper;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll(string query)
+        public async Task<IEnumerable<UserViewModel>> GetAll(string query)
         {
-            try
-            {
-                var users = await _usersService.GetAllByQuery(query);
-                return await Task.FromResult(Json(users.Select(u => new UserViewModel
-                {
-                    Id = u.Id,
-                    Username = u.UserName
-                })));
-            }
-            catch (Exception e)
-            {
-                return BadRequest(new ErrorResponse
-                {
-                    Code = ErrorCode.ServerError,
-                    Message = e.Message
-                });
-            }
+            var users = await _usersService.GetAllByQuery(query);
+            return _mapper.Map<IEnumerable<UserViewModel>>(users);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(int id)
+        public async Task<UserViewModel> Get(int id)
         {
             var user = await _usersService.GetById(id);
-            if (user != null)
-            {
-                return Json(new UserViewModel
-                {
-                    Id = user.Id,
-                    Username = user.UserName
-                });
-            }
-            else
-            {
-                return NotFound(new ErrorResponse
-                {
-                    Code = ErrorCode.NotFound,
-                    Message = "User not found"
-                });
-            }
+
+            if (user == null) throw new ApiException(404, "User not found", ErrorCode.NotFound);
+
+            return _mapper.Map<UserViewModel>(user);
         }
 
         [HttpGet("me")]
-        public async Task<IActionResult> GetMe()
+        public async Task<CurrentUserViewModel> GetMe()
         {
-            try
-            {
-                var me = await _userManager.GetUserAsync(User);
-                return Json(new CurrentUserViewModel
-                {
-                    Id = me.Id,
-                    Username = me.UserName,
-                    CardLastFourDigits = me.CardLastFourDigits
-                });
-            }
-            catch (Exception e)
-            {
-                return BadRequest(new ErrorResponse
-                {
-                    Code = ErrorCode.ServerError,
-                    Message = "Error while retrieving user information"
-                });
-            }
+            var me = await _userManager.GetUserAsync(User);
+            return _mapper.Map<CurrentUserViewModel>(me);
         }
 
         [HttpGet("me/teams")]
-        public async Task<IActionResult> GetMyTeams()
+        public async Task<IEnumerable<TeamShortInfoViewModel>> GetMyTeams()
         {
-            try {
-                var me = await _userManager.GetUserAsync(User);
-                var teams = await _teamsService.GetUserTeams(me.Id);
+            var me = await _userManager.GetUserAsync(User);
+            var teams = await _teamsService.GetUserTeams(me.Id);
 
-                return Json(teams.Select(t => new TeamShortInfoViewModel {
-                    Id = t.Id,
-                    Name = t.Name
-                }));
-            }
-            catch (Exception e) {
-                return BadRequest(new ErrorResponse
-                {
-                    Code = ErrorCode.ServerError,
-                    Message = e.Message
-                });
-            }
+            return _mapper.Map<IEnumerable<TeamShortInfoViewModel>>(teams);
         }
     }
 }

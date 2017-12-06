@@ -17,11 +17,12 @@ namespace WisePay.Web.Teams
             _db = db;
         }
 
-        public async Task<int> CreateTeam(CreateTeamModel model)
+        public async Task<int> CreateTeam(CreateTeamModel model, int adminId)
         {
             var team = new Team
             {
-                Name = model.Name
+                Name = model.Name,
+                AdminId = adminId
             };
 
             _db.Teams.Add(team);
@@ -32,6 +33,12 @@ namespace WisePay.Web.Teams
                 UserId = id,
                 TeamId = team.Id
             }));
+
+            _db.UserTeams.Add(new UserTeam
+            {
+                UserId = adminId,
+                TeamId = team.Id
+            });
 
             await _db.SaveChangesAsync();
 

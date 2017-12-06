@@ -7,7 +7,8 @@ namespace WisePay.Web.Teams
     {
         public MappingProfile()
         {
-            CreateMap<Team, TeamShortInfoViewModel>(MemberList.None);
+            CreateMap<Team, TeamShortInfoViewModel>();
+            CreateMap<Team, TeamViewModel>();
         }
     }
 }
