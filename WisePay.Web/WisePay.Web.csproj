@@ -4,6 +4,7 @@
     <UserSecretsId>471f4504-a6a4-4632-a6af-77b63faf13b8</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Automapper" Version="6.2.1" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.0" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.0.0" />

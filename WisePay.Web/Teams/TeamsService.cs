@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using WisePay.DataAccess;
 using WisePay.Entities;
 
@@ -35,6 +36,19 @@ namespace WisePay.Web.Teams
             await _db.SaveChangesAsync();
 
             return team.Id;
+        }
+
+        public async Task<IEnumerable<Team>> GetUserTeams(int userId)
+        {
+            return await _db.UserTeams
+                .Include(ut => ut.User)
+                .Where(ut => ut.UserId == userId)
+                .Select(ut => ut.Team)
+                .ToListAsync();
+        }
+
+        public async Task<Team> GetTeam(int teamId) {
+            return await _db.Teams.FindAsync(teamId);
         }
     }
 }

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using WisePay.Entities;
 using WisePay.Web.Core.ClientInteraction;
+using WisePay.Web.Teams;
 using WisePay.Web.Users;
 
 namespace WisePay.Web.Controllers
@@ -19,11 +20,16 @@ namespace WisePay.Web.Controllers
     {
         private UserManager<User> _userManager;
         private UsersService _usersService;
+        private TeamsService _teamsService;
 
-        public UsersController(UsersService usersService, UserManager<User> userManager)
+        public UsersController(
+            UsersService usersService,
+            TeamsService teamsService,
+            UserManager<User> userManager)
         {
             _userManager = userManager;
             _usersService = usersService;
+            _teamsService = teamsService;
         }
 
         [HttpGet]
@@ -93,19 +99,19 @@ namespace WisePay.Web.Controllers
             }
         }
 
-        [HttpGet("/teams/{teamId}/users")]
-        public async Task<IActionResult> GetUsersInTeam(int teamId)
+        [HttpGet("me/teams")]
+        public async Task<IActionResult> GetMyTeams()
         {
-            try
-            {
-                var users = await _usersService.GetUsersInTeam(teamId);
-                return Json(users.Select(u => new UserViewModel
-                {
-                    Id = u.Id,
-                    Username = u.UserName
+            try {
+                var me = await _userManager.GetUserAsync(User);
+                var teams = await _teamsService.GetUserTeams(me.Id);
+
+                return Json(teams.Select(t => new TeamShortInfoViewModel {
+                    Id = t.Id,
+                    Name = t.Name
                 }));
-            } catch (Exception e)
-            {
+            }
+            catch (Exception e) {
                 return BadRequest(new ErrorResponse
                 {
                     Code = ErrorCode.ServerError,
