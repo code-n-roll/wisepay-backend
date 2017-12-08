@@ -23,17 +23,20 @@ namespace WisePay.Web.Controllers
         private readonly UserManager<User> _userManager;
         private readonly IMapper _mapper;
         private readonly UsersService _usersService;
+        private readonly ICurrentUserAccessor _currentUser;
         private readonly TeamsService _teamsService;
 
         public UsersController(
             UsersService usersService,
             TeamsService teamsService,
             UserManager<User> userManager,
+            ICurrentUserAccessor currentUser,
             IMapper mapper)
         {
             _userManager = userManager;
             _usersService = usersService;
             _teamsService = teamsService;
+            _currentUser = currentUser;
             _mapper = mapper;
         }
 
@@ -64,9 +67,7 @@ namespace WisePay.Web.Controllers
         [HttpGet("me/teams")]
         public async Task<IEnumerable<TeamShortInfoViewModel>> GetMyTeams()
         {
-            var me = await _userManager.GetUserAsync(User);
-            var teams = await _teamsService.GetUserTeams(me.Id);
-
+            var teams = await _teamsService.GetUserTeams(_currentUser.Id);
             return _mapper.Map<IEnumerable<TeamShortInfoViewModel>>(teams);
         }
     }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using WisePay.Web.Auth;
 using WisePay.Web.Teams;
@@ -16,6 +17,9 @@ namespace WisePay.Web.Internals
             services.AddScoped<AuthTokenService, AuthTokenService>();
             services.AddScoped<UsersService, UsersService>();
             services.AddScoped<TeamsService, TeamsService>();
+
+            services.AddScoped<ICurrentUserAccessor, CurrentUserAccessor>();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             return services;
         }
