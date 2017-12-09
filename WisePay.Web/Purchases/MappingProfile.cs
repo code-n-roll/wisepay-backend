@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using AutoMapper;
 using WisePay.Entities;
 using WisePay.Web.Purchases.Models;
-using WisePay.Web.Teams.Models;
 
 namespace WisePay.Web.Purchases
 {
@@ -18,7 +14,7 @@ namespace WisePay.Web.Purchases
                 .ForMember(p => p.Users,
                     opt => opt.MapFrom(t => t.UserPurchases.Select(up => new UserPurchaseInfo
                     {
-                        Amount = up.Sum,
+                        Sum = up.Sum,
                         IsPayedOff = up.IsPayedOff,
                         UserId = up.UserId,
                         Username = up.User != null ? up.User.UserName : null
