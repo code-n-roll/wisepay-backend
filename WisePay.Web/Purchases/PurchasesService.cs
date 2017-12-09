@@ -65,7 +65,7 @@ namespace WisePay.Web.Purchases
                 CreatorId = currentUserId,
                 IsPayedOff = false,
                 Name = model.Name,
-                TotalSum = model.TotalAmount,
+                TotalSum = model.TotalSum,
                 CreatedAt = DateTime.Now
             };
 
@@ -76,7 +76,7 @@ namespace WisePay.Web.Purchases
             {
                 PurchaseId = purchase.Id,
                 UserId = u.UserId,
-                Sum = u.Amount,
+                Sum = u.Sum,
                 IsPayedOff = false
             });
 
