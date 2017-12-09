@@ -1,10 +1,7 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using WisePay.Entities;
@@ -12,14 +9,11 @@ using WisePay.Web.Core.ClientInteraction;
 using WisePay.Web.Internals;
 using WisePay.Web.Purchases;
 using WisePay.Web.Purchases.Models;
-using WisePay.Web.Teams;
-using WisePay.Web.Teams.Models;
-using WisePay.Web.Users;
 
 namespace WisePay.Web.Controllers
 {
     [Produces("application/json")]
-    [Route("api/users")]
+    [Route("api/purchases")]
     [Authorize]
     public class PurchasesController : Controller
     {
