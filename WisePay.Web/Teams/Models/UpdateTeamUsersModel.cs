@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace WisePay.Web.Teams
+namespace WisePay.Web.Teams.Models
 {
     public class UpdateTeamUsersModel
     {

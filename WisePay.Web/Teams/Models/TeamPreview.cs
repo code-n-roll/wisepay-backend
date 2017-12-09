@@ -1,6 +1,6 @@
-namespace WisePay.Web.Teams
+namespace WisePay.Web.Teams.Models
 {
-    public class TeamShortInfoViewModel
+    public class TeamPreview
     {
         public int Id { get; set; }
         public string Name { get; set; }

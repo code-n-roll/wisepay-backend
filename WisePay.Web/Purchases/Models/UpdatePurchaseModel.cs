@@ -1,4 +1,4 @@
-namespace WisePay.Web.Purchases
+namespace WisePay.Web.Purchases.Models
 {
     public class UpdatePurchaseModel
     {

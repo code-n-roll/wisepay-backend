@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using WisePay.Web.Users;
+using WisePay.Web.Users.Models;
 
-namespace WisePay.Web.Teams
+namespace WisePay.Web.Teams.Models
 {
     public class TeamViewModel
     {

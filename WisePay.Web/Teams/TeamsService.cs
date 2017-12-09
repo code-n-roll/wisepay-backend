@@ -7,6 +7,7 @@ using WisePay.DataAccess;
 using WisePay.Entities;
 using WisePay.Web.Core.ClientInteraction;
 using WisePay.Web.Internals;
+using WisePay.Web.Teams.Models;
 
 namespace WisePay.Web.Teams
 {

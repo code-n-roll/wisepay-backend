@@ -1,14 +1,11 @@
-﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using WisePay.Entities;
-using System.Security.Claims;
-using System.IdentityModel.Tokens.Jwt;
 using WisePay.Web.Auth;
-using Microsoft.IdentityModel.Tokens;
 using WisePay.Web.Core.ClientInteraction;
 using WisePay.Web.Internals;
+using WisePay.Web.Auth.Models;
 
 namespace WisePay.Web.Controllers
 {

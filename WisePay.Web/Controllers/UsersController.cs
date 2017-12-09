@@ -10,8 +10,11 @@ using Microsoft.AspNetCore.Mvc;
 using WisePay.Entities;
 using WisePay.Web.Core.ClientInteraction;
 using WisePay.Web.Internals;
+using WisePay.Web.Purchases;
 using WisePay.Web.Teams;
+using WisePay.Web.Teams.Models;
 using WisePay.Web.Users;
+using WisePay.Web.Users.Models;
 
 namespace WisePay.Web.Controllers
 {
@@ -25,10 +28,12 @@ namespace WisePay.Web.Controllers
         private readonly UsersService _usersService;
         private readonly ICurrentUserAccessor _currentUser;
         private readonly TeamsService _teamsService;
+        private readonly PurchasesService _purchasesService;
 
         public UsersController(
             UsersService usersService,
             TeamsService teamsService,
+            PurchasesService purchasesService,
             UserManager<User> userManager,
             ICurrentUserAccessor currentUser,
             IMapper mapper)
@@ -36,6 +41,7 @@ namespace WisePay.Web.Controllers
             _userManager = userManager;
             _usersService = usersService;
             _teamsService = teamsService;
+            _purchasesService = purchasesService;
             _currentUser = currentUser;
             _mapper = mapper;
         }
@@ -65,10 +71,10 @@ namespace WisePay.Web.Controllers
         }
 
         [HttpGet("me/teams")]
-        public async Task<IEnumerable<TeamShortInfoViewModel>> GetMyTeams()
+        public async Task<IEnumerable<TeamPreview>> GetMyTeams()
         {
             var teams = await _teamsService.GetUserTeams(_currentUser.Id);
-            return _mapper.Map<IEnumerable<TeamShortInfoViewModel>>(teams);
+            return _mapper.Map<IEnumerable<TeamPreview>>(teams);
         }
     }
 }

@@ -4,13 +4,12 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace WisePay.Web.Auth
+namespace WisePay.Web.Purchases.Models
 {
-    public class LoginModel
+    public class UserPurchaseModel
     {
         [Required]
-        public string Email { get; set; }
-        [Required]
-        public string Password { get; set; }
+        public int UserId { get; set; }
+        public decimal Amount { get; set; }
     }
 }

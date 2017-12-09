@@ -11,7 +11,9 @@ using WisePay.Entities;
 using WisePay.Web.Core.ClientInteraction;
 using WisePay.Web.Internals;
 using WisePay.Web.Teams;
+using WisePay.Web.Teams.Models;
 using WisePay.Web.Users;
+using WisePay.Web.Users.Models;
 
 namespace WisePay.Web.Controllers
 {

@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using AutoMapper;
 using WisePay.Entities;
+using WisePay.Web.Users.Models;
 
 namespace WisePay.Web.Users
 {

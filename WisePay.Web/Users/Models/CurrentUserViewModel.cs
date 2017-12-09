@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace WisePay.Web.Users
+﻿namespace WisePay.Web.Users.Models
 {
     public class CurrentUserViewModel
     {

@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using WisePay.Entities;
 using WisePay.Web.Auth;
+using WisePay.Web.Auth.Models;
 using WisePay.Web.Core.ClientInteraction;
 
 namespace WisePay.Web.Controllers
