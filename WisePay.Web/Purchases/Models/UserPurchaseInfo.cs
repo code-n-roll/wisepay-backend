@@ -10,7 +10,7 @@ namespace WisePay.Web.Purchases.Models
         public int UserId { get; set; }
         public string Username { get; set; }
 
-        public decimal Amount { get; set; }
+        public decimal Sum { get; set; }
         public bool IsPayedOff { get; set; }
     }
 }
