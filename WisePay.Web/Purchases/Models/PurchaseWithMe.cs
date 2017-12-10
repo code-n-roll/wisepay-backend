@@ -5,16 +5,16 @@ using System.Threading.Tasks;
 
 namespace WisePay.Web.Purchases.Models
 {
-    public class PurchaseForMe : PurchaseViewModel
+    public class PurchaseWithMe : PurchaseViewModel
     {
-        public PurchaseForMe()
+        public PurchaseWithMe()
         {
-            IsMy = false;
+            IsOwner = false;
         }
 
         public string CreatorName { get; set; }
 
-        public decimal Amount { get; set; }
+        public decimal Sum { get; set; }
         public bool IsPayedOff { get; set; }
     }
 }

@@ -40,6 +40,20 @@ namespace WisePay.Web.Controllers
             _mapper = mapper;
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetPurchases()
+        {
+            var (myPurchases, purchasesWithMe) = await _purchasesService.GetUserPurchases(_currentUser.Id);
+
+            IEnumerable<PurchaseViewModel> myPurchasesViewModel =
+                _mapper.Map<IEnumerable<MyPurchase>>(myPurchases);
+            IEnumerable<PurchaseViewModel> purchasesWithMeViewModel =
+                _mapper.Map<IEnumerable<PurchaseWithMe>>(purchasesWithMe);
+
+            return Json(myPurchasesViewModel.Concat(purchasesWithMeViewModel)
+                .OrderByDescending(p => p.CreatedAt));
+        }
+
         [HttpPatch("{purchaseId}")]
         public async Task<IActionResult> UpdatePurchase(int purchaseId, [FromBody]UpdatePurchaseModel model)
         {
@@ -50,20 +64,6 @@ namespace WisePay.Web.Controllers
             return Ok();
         }
 
-        [HttpGet("my")]
-        public async Task<IEnumerable<MyPurchasePreview>> GetPurchases()
-        {
-            var purchases = await _purchasesService.GetUserPurchases(_currentUser.Id);
-            return _mapper.Map<IEnumerable<MyPurchasePreview>>(purchases);
-        }
-
-        [HttpGet("withme")]
-        public async Task<IEnumerable<PurchaseForMe>> GetPurchasesWithMe()
-        {
-            var purchases = await _purchasesService.GetPurchasesWithUser(_currentUser.Id);
-            return _mapper.Map<IEnumerable<PurchaseForMe>>(purchases);
-        }
-
         [HttpPost]
         public async Task<IActionResult> CreatePurchase([FromBody]CreatePurchaseModel model)
         {
@@ -72,21 +72,6 @@ namespace WisePay.Web.Controllers
             var purchaseId = await _purchasesService.CreatePurchase(model, _currentUser.Id);
 
             return Created($"/api/purchases/{purchaseId}", new { Id = purchaseId });
-        }
-
-        [HttpGet("{purchaseId}")]
-        public async Task<MyPurchase> Get(int purchaseId)
-        {
-            throw new NotImplementedException();
-
-            var purchase = await _purchasesService.GetPurchase(purchaseId);
-            if (purchase == null)
-                throw new ApiException(404, "Purchase not found", ErrorCode.NotFound);
-
-            if (purchase.CreatorId != _currentUser.Id)
-                throw new ApiException(401, "Access denied", ErrorCode.AuthError);
-
-            return _mapper.Map<MyPurchase>(purchase);
         }
     }
 }
