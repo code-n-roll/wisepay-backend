@@ -1,7 +1,10 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using WisePay.Entities;
@@ -9,6 +12,9 @@ using WisePay.Web.Core.ClientInteraction;
 using WisePay.Web.Internals;
 using WisePay.Web.Purchases;
 using WisePay.Web.Purchases.Models;
+using WisePay.Web.Teams;
+using WisePay.Web.Teams.Models;
+using WisePay.Web.Users;
 
 namespace WisePay.Web.Controllers
 {
@@ -45,7 +51,7 @@ namespace WisePay.Web.Controllers
         }
 
         [HttpGet("my")]
-        public async Task<IEnumerable<MyPurchasePreview>> GetMyPurchases()
+        public async Task<IEnumerable<MyPurchasePreview>> GetPurchases()
         {
             var purchases = await _purchasesService.GetUserPurchases(_currentUser.Id);
             return _mapper.Map<IEnumerable<MyPurchasePreview>>(purchases);
@@ -68,9 +74,11 @@ namespace WisePay.Web.Controllers
             return Created($"/api/purchases/{purchaseId}", new { Id = purchaseId });
         }
 
-        [HttpGet("purchaseId")]
+        [HttpGet("{purchaseId}")]
         public async Task<MyPurchase> Get(int purchaseId)
         {
+            throw new NotImplementedException();
+
             var purchase = await _purchasesService.GetPurchase(purchaseId);
             if (purchase == null)
                 throw new ApiException(404, "Purchase not found", ErrorCode.NotFound);

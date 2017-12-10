@@ -34,9 +34,16 @@ namespace WisePay.Web.Purchases
 
         public async Task<IEnumerable<Purchase>> GetUserPurchases(int userId)
         {
-            return await _db.Purchases
+            var myPurchases = await _db.Purchases
                 .Where(p => p.CreatorId == userId)
                 .ToListAsync();
+
+            var purchasesForMe = await _db.UserPurchases
+                .Include(up => up.Purchase)
+                .ThenInclude(p => p.Creator)
+                .Where(up => up.UserId == userId)
+                .ToListAsync();
+
         }
 
         public async Task<Purchase> GetPurchase(int purchaseId)
@@ -65,7 +72,7 @@ namespace WisePay.Web.Purchases
                 CreatorId = currentUserId,
                 IsPayedOff = false,
                 Name = model.Name,
-                TotalSum = model.TotalSum,
+                TotalSum = model.TotalAmount,
                 CreatedAt = DateTime.Now
             };
 
@@ -76,7 +83,7 @@ namespace WisePay.Web.Purchases
             {
                 PurchaseId = purchase.Id,
                 UserId = u.UserId,
-                Sum = u.Sum,
+                Sum = u.Amount,
                 IsPayedOff = false
             });
 
