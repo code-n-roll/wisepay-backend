@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using WisePay.Web.Core.ClientInteraction;
 
 namespace WisePay.Web.Internals

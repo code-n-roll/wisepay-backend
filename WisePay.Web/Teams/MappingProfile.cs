@@ -2,7 +2,6 @@ using System.Linq;
 using AutoMapper;
 using WisePay.Entities;
 using WisePay.Web.Teams.Models;
-using WisePay.Web.Users;
 
 namespace WisePay.Web.Teams
 {

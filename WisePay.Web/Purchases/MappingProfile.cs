@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using AutoMapper;
 using WisePay.Entities;
 using WisePay.Web.Purchases.Models;
-using WisePay.Web.Teams.Models;
 
 namespace WisePay.Web.Purchases
 {
