@@ -87,7 +87,7 @@ namespace WisePay.Web.Purchases
                 PurchaseId = purchase.Id,
                 UserId = u.UserId,
                 Sum = u.Sum,
-                IsPayedOff = false
+                Status = PurchaseStatus.New
             });
 
             _db.UserPurchases.AddRange(userPurchases);

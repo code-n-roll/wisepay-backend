@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using WisePay.Entities;
@@ -16,6 +16,8 @@ namespace WisePay.DataAccess
         // Connection tables
         public DbSet<UserTeam> UserTeams { get; set; }
         public DbSet<UserPurchase> UserPurchases { get; set; }
+
+        public DbSet<PayHistoryItem> PayHistory { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

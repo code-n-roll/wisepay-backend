@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WisePay.Entities;
 
 namespace WisePay.Web.Purchases.Models
 {
@@ -15,6 +16,6 @@ namespace WisePay.Web.Purchases.Models
         public string CreatorName { get; set; }
 
         public decimal Sum { get; set; }
-        public bool IsPayedOff { get; set; }
+        public PurchaseStatus Status { get; set; }
     }
 }

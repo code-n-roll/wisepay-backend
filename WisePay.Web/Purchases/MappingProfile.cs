@@ -14,7 +14,7 @@ namespace WisePay.Web.Purchases
                     opt => opt.MapFrom(t => t.UserPurchases.Select(up => new UserPurchaseInfo
                     {
                         Sum = up.Sum,
-                        IsPayedOff = up.IsPayedOff,
+                        Status = up.Status,
                         UserId = up.UserId,
                         Username = up.User != null ? up.User.UserName : null
                     }))

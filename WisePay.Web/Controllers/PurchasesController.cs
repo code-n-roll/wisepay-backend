@@ -54,6 +54,16 @@ namespace WisePay.Web.Controllers
                 .OrderByDescending(p => p.CreatedAt));
         }
 
+        [HttpPost]
+        public async Task<IActionResult> CreatePurchase([FromBody]CreatePurchaseModel model)
+        {
+            if (model == null) throw new ApiException(400, "Invalid request body", ErrorCode.InvalidRequestFormat);
+
+            var purchaseId = await _purchasesService.CreatePurchase(model, _currentUser.Id);
+
+            return Created($"/api/purchases/{purchaseId}", new { Id = purchaseId });
+        }
+
         [HttpPatch("{purchaseId}")]
         public async Task<IActionResult> UpdatePurchase(int purchaseId, [FromBody]UpdatePurchaseModel model)
         {
@@ -64,14 +74,16 @@ namespace WisePay.Web.Controllers
             return Ok();
         }
 
-        [HttpPost]
-        public async Task<IActionResult> CreatePurchase([FromBody]CreatePurchaseModel model)
+        [HttpPatch("{purchaseId}")]
+        public async Task<IActionResult> Pay(int purchaseId, decimal sum)
         {
-            if (model == null) throw new ApiException(400, "Invalid request body", ErrorCode.InvalidRequestFormat);
+            throw new NotImplementedException();
+        }
 
-            var purchaseId = await _purchasesService.CreatePurchase(model, _currentUser.Id);
-
-            return Created($"/api/purchases/{purchaseId}", new { Id = purchaseId });
+        [HttpPatch("{purchaseId}")]
+        public async Task<IActionResult> Decline(int purchaseId)
+        {
+            throw new NotImplementedException();
         }
     }
 }
