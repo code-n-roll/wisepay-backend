@@ -12,7 +12,7 @@ namespace WisePay.Entities
         public int PurchaseId { get; set; }
         public Purchase Purchase { get; set; }
 
-        public decimal Sum { get; set; }
+        public decimal? Sum { get; set; }
         public PurchaseStatus Status { get; set; }
     }
 }

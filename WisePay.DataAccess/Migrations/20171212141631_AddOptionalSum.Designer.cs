@@ -12,9 +12,10 @@ using WisePay.Entities;
 namespace WisePay.DataAccess.Migrations
 {
     [DbContext(typeof(WiseContext))]
-    partial class WiseContextModelSnapshot : ModelSnapshot
+    [Migration("20171212141631_AddOptionalSum")]
+    partial class AddOptionalSum
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -102,7 +103,7 @@ namespace WisePay.DataAccess.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("WisePay.Entities.PaymentHistoryItem", b =>
+            modelBuilder.Entity("WisePay.Entities.PayHistoryItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -121,7 +122,7 @@ namespace WisePay.DataAccess.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("PaymentHistory");
+                    b.ToTable("PayHistory");
                 });
 
             modelBuilder.Entity("WisePay.Entities.Purchase", b =>
@@ -316,7 +317,7 @@ namespace WisePay.DataAccess.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("WisePay.Entities.PaymentHistoryItem", b =>
+            modelBuilder.Entity("WisePay.Entities.PayHistoryItem", b =>
                 {
                     b.HasOne("WisePay.Entities.Purchase", "Purchase")
                         .WithMany()

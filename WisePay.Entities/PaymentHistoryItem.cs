@@ -4,8 +4,10 @@ using System.Text;
 
 namespace WisePay.Entities
 {
-    public class PayHistoryItem
+    public class PaymentHistoryItem
     {
+        public int Id { get; set; }
+
         public DateTime Timestamp { get; set; }
         public decimal Sum { get; set; }
 

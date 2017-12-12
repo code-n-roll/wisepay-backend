@@ -75,15 +75,17 @@ namespace WisePay.Web.Controllers
         }
 
         [HttpPatch("{purchaseId}")]
-        public async Task<IActionResult> Pay(int purchaseId, decimal sum)
+        public async Task<IActionResult> Pay(int purchaseId, [FromBody]decimal sum)
         {
-            throw new NotImplementedException();
+            await _purchasesService.PayForPurchase(purchaseId, _currentUser.Id, sum);
+            return Ok();
         }
 
         [HttpPatch("{purchaseId}")]
         public async Task<IActionResult> Decline(int purchaseId)
         {
-            throw new NotImplementedException();
+            await _purchasesService.DeclinePurchase(purchaseId, _currentUser.Id);
+            return Ok();
         }
     }
 }

@@ -17,7 +17,7 @@ namespace WisePay.DataAccess
         public DbSet<UserTeam> UserTeams { get; set; }
         public DbSet<UserPurchase> UserPurchases { get; set; }
 
-        public DbSet<PayHistoryItem> PayHistory { get; set; }
+        public DbSet<PaymentHistoryItem> PaymentHistory { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
