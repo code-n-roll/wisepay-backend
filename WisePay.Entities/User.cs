@@ -11,6 +11,8 @@ namespace WisePay.Entities
         public string BankIdToken { get; set; }
         public string CardLastFourDigits { get; set; }
 
+        public string AvatarPath { get; set; }
+
         public ICollection<UserTeam> UserTeams { get; set; } = new List<UserTeam>();
 
         public ICollection<UserPurchase> UserPurchases { get; set; } = new List<UserPurchase>();

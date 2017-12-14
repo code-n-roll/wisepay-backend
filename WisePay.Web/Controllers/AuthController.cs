@@ -8,6 +8,7 @@ using WisePay.Web.Internals;
 using WisePay.Web.Auth.Models;
 using System.Linq;
 using System.Collections.Generic;
+using WisePay.Web.Avatars;
 
 namespace WisePay.Web.Controllers
 {
@@ -16,11 +17,16 @@ namespace WisePay.Web.Controllers
     {
         private UserManager<User> _userManager;
         private AuthTokenService _tokenService;
+        private AvatarsService _avatarsService;
 
-        public AuthController(UserManager<User> userManager, AuthTokenService tokenService)
+        public AuthController(
+            UserManager<User> userManager,
+            AuthTokenService tokenService,
+            AvatarsService avatarsService)
         {
             _userManager = userManager;
             _tokenService = tokenService;
+            _avatarsService = avatarsService;
         }
 
         [HttpPost("sign_in")]
@@ -73,6 +79,10 @@ namespace WisePay.Web.Controllers
             {
                 return GetErrorResult(result);
             }
+
+            var avatarPath = _avatarsService.GenerateAndSaveAvatar(newUser.UserName);
+            newUser.AvatarPath = avatarPath;
+            await _userManager.UpdateAsync(newUser);
 
             var response = new
             {

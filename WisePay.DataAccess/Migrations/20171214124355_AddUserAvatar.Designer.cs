@@ -12,9 +12,10 @@ using WisePay.Entities;
 namespace WisePay.DataAccess.Migrations
 {
     [DbContext(typeof(WiseContext))]
-    partial class WiseContextModelSnapshot : ModelSnapshot
+    [Migration("20171214124355_AddUserAvatar")]
+    partial class AddUserAvatar
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

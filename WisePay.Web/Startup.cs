@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -78,7 +78,7 @@ namespace WisePay
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             app.UseMiddleware<ErrorHandlingMiddleware>();
-
+            app.UseStaticFiles("/static");
             app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
             app.UseAuthentication();
             app.UseMvc();

@@ -1,8 +1,10 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using WisePay.Entities;
@@ -10,6 +12,7 @@ using WisePay.Web.Account;
 using WisePay.Web.Account.Models;
 using WisePay.Web.Auth;
 using WisePay.Web.Auth.Models;
+using WisePay.Web.Avatars;
 using WisePay.Web.Core.ClientInteraction;
 using WisePay.Web.ExternalServices;
 using WisePay.Web.Internals;
@@ -22,7 +25,6 @@ namespace WisePay.Web.Controllers
     public class AccountController : Controller
     {
         private readonly UserManager<User> _userManager;
-        private readonly AuthTokenService _tokenService;
         private readonly BankApi _bankApi;
         private readonly ICurrentUserAccessor _currentUser;
         private readonly AccountService _accountService;
@@ -30,15 +32,11 @@ namespace WisePay.Web.Controllers
 
         public AccountController(
             UserManager<User> userManager,
-            AuthTokenService tokenService,
-            BankApi bankApi,
             AccountService accountService,
             IMapper mapper,
             ICurrentUserAccessor currentUser)
         {
             _userManager = userManager;
-            _tokenService = tokenService;
-            _bankApi = bankApi;
             _currentUser = currentUser;
             _accountService = accountService;
             _mapper = mapper;
@@ -49,6 +47,20 @@ namespace WisePay.Web.Controllers
         {
             var user = await _accountService.AddBankCard(_currentUser.Id, cardModel);
             return _mapper.Map<CurrentUserViewModel>(user);
+        }
+
+        [HttpPost("update_avatar")]
+        public async Task<IActionResult> UpdateAvatar(IFormFile avatarData)
+        {
+            byte[] avatarBytes = null;
+            using (var memoryStream = new MemoryStream())
+            {
+                await avatarData.CopyToAsync(memoryStream);
+                avatarBytes = memoryStream.ToArray();
+            }
+
+            await _accountService.UpdateAvatar(_currentUser.Id, avatarBytes);
+            return Ok();
         }
     }
 }

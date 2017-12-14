@@ -1,6 +1,9 @@
 # Sensitive files
 appsettings.*.json
 
+# User data
+WisePay.Web/wwwroot/
+
 *.swp
 *.*~
 project.lock.json
