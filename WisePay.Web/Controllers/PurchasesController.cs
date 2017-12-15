@@ -74,17 +74,24 @@ namespace WisePay.Web.Controllers
             return Ok();
         }
 
-        [HttpPatch("{purchaseId}")]
-        public async Task<IActionResult> Pay(int purchaseId, [FromBody]decimal sum)
+        [HttpPost("{purchaseId}/pay")]
+        public async Task<IActionResult> Pay(int purchaseId, [FromBody]PayModel model)
         {
-            await _purchasesService.PayForPurchase(purchaseId, _currentUser.Id, sum);
+            await _purchasesService.PayForPurchase(purchaseId, _currentUser.Id, model.Sum);
             return Ok();
         }
 
-        [HttpPatch("{purchaseId}")]
+        [HttpPost("{purchaseId}/decline")]
         public async Task<IActionResult> Decline(int purchaseId)
         {
             await _purchasesService.DeclinePurchase(purchaseId, _currentUser.Id);
+            return Ok();
+        }
+
+        [HttpPost("sendmoney")]
+        public async Task<IActionResult> SendMoney([FromBody]SendMoneyModel model)
+        {
+            await _purchasesService.SendMoney(_currentUser.Id, model.UserId, model.Sum);
             return Ok();
         }
     }

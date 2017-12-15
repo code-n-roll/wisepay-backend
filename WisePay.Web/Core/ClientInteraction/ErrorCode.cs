@@ -15,6 +15,7 @@ namespace WisePay.Web.Core.ClientInteraction
         ValidationError,
 
         NotFound,
-        InvalidRequestFormat
+        InvalidRequestFormat,
+        AlreadyExists
     }
 }

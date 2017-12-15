@@ -29,6 +29,7 @@ namespace WisePay.Web.Internals
 
             services.AddScoped<ICurrentUserAccessor, CurrentUserAccessor>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddSingleton<JsonConfig>();
             
             return services;
         }

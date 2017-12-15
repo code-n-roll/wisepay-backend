@@ -10,37 +10,43 @@ using Microsoft.Extensions.Configuration;
 using WisePay.Web.Account.Models;
 using WisePay.Web.ExternalServices.Responses;
 using WisePay.Web.Internals;
+using Newtonsoft.Json.Serialization;
+using System.Text;
 
 namespace WisePay.Web.ExternalServices
 {
     public class BankApi
     {
         private readonly IConfiguration _config;
+        private readonly JsonConfig _jsonConfig;
 
-        public BankApi(IConfiguration configuration)
+        public BankApi(IConfiguration configuration, JsonConfig jsonConfig)
         {
             _config = configuration;
+            _jsonConfig = jsonConfig;
         }
 
         public async Task SendMoney(string senderToken, string recipientIdToken, decimal sum)
         {
             try
             {
-                await _config["BankToken"]
+                await _config["BankAddress"]
                     .AppendPathSegment("sendMoney")
                     .WithHeader("Authorization", senderToken)
-                    .PostJsonAsync(new
-                    {
-                        userToIdToken = recipientIdToken,
-                        amountToSend = sum
-                    });
+                    .PostAsync(new StringContent(
+                        JsonConvert.SerializeObject(new
+                        {
+                            userToIdToken = recipientIdToken,
+                            amountToSend = sum
+                        }, _jsonConfig.Formatter),
+                        Encoding.UTF8, "application/json"));
             }
             catch (FlurlHttpException e)
             {
                 if (e.Call.HttpStatus == System.Net.HttpStatusCode.BadRequest)
                 {
                     throw new ApiException(400, "Not enough money");
-                } 
+                }
             }
         }
 
@@ -48,9 +54,11 @@ namespace WisePay.Web.ExternalServices
         {
             try
             {
-                return await _config["BankToken"]
+                return await _config["BankAddress"]
                     .AppendPathSegment("auth")
-                    .PostJsonAsync(card)
+                    .PostAsync(new StringContent(
+                        JsonConvert.SerializeObject(card, _jsonConfig.Formatter),
+                        Encoding.UTF8, "application/json"))
                     .ReceiveJson<BankApiAuthResponse>();
             }
             catch (FlurlHttpException e)

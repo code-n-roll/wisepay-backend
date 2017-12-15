@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -11,18 +11,20 @@ namespace WisePay.Web.Internals
 {
     public class ErrorHandlingMiddleware
     {
-        private readonly RequestDelegate next;
+        private readonly RequestDelegate _next;
+        private readonly JsonConfig _jsonConfig;
 
-        public ErrorHandlingMiddleware(RequestDelegate next)
+        public ErrorHandlingMiddleware(RequestDelegate next, JsonConfig jsonConfig)
         {
-            this.next = next;
+            _next = next;
+            _jsonConfig = jsonConfig;
         }
 
         public async Task Invoke(HttpContext context)
         {
             try
             {
-                await next(context);
+                await _next(context);
             }
             catch (Exception ex)
             {
@@ -30,7 +32,7 @@ namespace WisePay.Web.Internals
             }
         }
 
-        private static async Task HandleExceptionAsync(HttpContext context, Exception exception)
+        private async Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
             ErrorResponse response = null;
             context.Response.ContentType = "application/json";
@@ -58,7 +60,7 @@ namespace WisePay.Web.Internals
                 }
             }
 
-            await context.Response.WriteAsync(JsonConvert.SerializeObject(response));
+            await context.Response.WriteAsync(JsonConvert.SerializeObject(response, _jsonConfig.Formatter));
         }
     }
 }

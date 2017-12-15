@@ -25,7 +25,6 @@ namespace WisePay.Web.Controllers
     public class AccountController : Controller
     {
         private readonly UserManager<User> _userManager;
-        private readonly BankApi _bankApi;
         private readonly ICurrentUserAccessor _currentUser;
         private readonly AccountService _accountService;
         private readonly IMapper _mapper;
@@ -41,15 +40,15 @@ namespace WisePay.Web.Controllers
             _accountService = accountService;
             _mapper = mapper;
         }
-        
-        [HttpPost("addcard")]
+
+        [HttpPost("addCard")]
         public async Task<CurrentUserViewModel> AddBankCard([FromBody]BankCardModel cardModel)
         {
             var user = await _accountService.AddBankCard(_currentUser.Id, cardModel);
             return _mapper.Map<CurrentUserViewModel>(user);
         }
 
-        [HttpPost("update_avatar")]
+        [HttpPost("updateAvatar")]
         public async Task<IActionResult> UpdateAvatar(IFormFile avatarData)
         {
             byte[] avatarBytes = null;
@@ -61,6 +60,21 @@ namespace WisePay.Web.Controllers
 
             await _accountService.UpdateAvatar(_currentUser.Id, avatarBytes);
             return Ok();
+        }
+
+        [HttpPost("updateProfile")]
+        public async Task<IActionResult> UpdateProfile([FromBody]UpdateProfileModel model)
+        {
+            await _accountService.UpdateProfile(_currentUser.Id, model);
+            return Ok();
+        }
+
+        [HttpGet]
+        public async Task<ProfileViewModel> GetProfileData()
+        {
+            var user = await _userManager.FindByIdAsync(_currentUser.Id.ToString());
+
+            return _mapper.Map<ProfileViewModel>(user);
         }
     }
 }

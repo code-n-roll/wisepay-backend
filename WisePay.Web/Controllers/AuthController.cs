@@ -9,6 +9,7 @@ using WisePay.Web.Auth.Models;
 using System.Linq;
 using System.Collections.Generic;
 using WisePay.Web.Avatars;
+using WisePay.Web.Core.Helpers;
 
 namespace WisePay.Web.Controllers
 {
@@ -34,15 +35,11 @@ namespace WisePay.Web.Controllers
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
-            {
                 throw new ApiException(400, "Invalid email", ErrorCode.InvalidCredentials);
-            }
 
             var isPasswordCorrect = await _userManager.CheckPasswordAsync(user, model.Password);
             if (!isPasswordCorrect)
-            {
                 throw new ApiException(400, "Invalid password", ErrorCode.InvalidCredentials);
-            }
 
             var token = await _tokenService.GenerateToken(user);
 
@@ -59,13 +56,7 @@ namespace WisePay.Web.Controllers
         public async Task<IActionResult> Register([FromBody]RegisterModel registerModel)
         {
             if (registerModel.Password != registerModel.PasswordConfirmation)
-            {
-                return BadRequest(new ErrorResponse
-                {
-                    Code = ErrorCode.InvalidCredentials,
-                    Message = "Passwords don't match"
-                });
-            }
+                throw new ApiException(400, "Passwords don't match", ErrorCode.InvalidCredentials);
 
             var newUser = new User()
             {
@@ -74,11 +65,7 @@ namespace WisePay.Web.Controllers
             };
 
             var result = await _userManager.CreateAsync(newUser, registerModel.Password);
-
-            if (!result.Succeeded)
-            {
-                return GetErrorResult(result);
-            }
+            ErrorResultsHandler.ThrowIfIdentityError(result);
 
             var avatarPath = _avatarsService.GenerateAndSaveAvatar(newUser.UserName);
             newUser.AvatarPath = avatarPath;
@@ -91,53 +78,6 @@ namespace WisePay.Web.Controllers
             };
 
             return Ok(response);
-        }
-
-        private IActionResult GetErrorResult(IdentityResult result)
-        {
-            if (result == null)
-            {
-                return BadRequest(new ErrorResponse
-                {
-                    Code = ErrorCode.ServerError
-                });
-            }
-
-            if (result.Errors != null)
-            {
-                var errorResponse = new ErrorResponse();
-
-                if (result.Errors.Count() == 1)
-                {
-                    errorResponse.Code = ErrorCode.AuthError;
-                    errorResponse.Message = result.Errors.ElementAt(0).Description;
-                }
-                else
-                {
-                    errorResponse.Code = ErrorCode.MultipleErrors;
-                    var innerErrors = new List<InnerError>();
-
-                    foreach (var error in result.Errors)
-                    {
-                        innerErrors.Add(new InnerError
-                        {
-                            Code = ErrorCode.AuthError,
-                            Message = error.Description
-                        });
-                    }
-
-                    errorResponse.InnerErrors = innerErrors;
-                }
-
-                return BadRequest(errorResponse);
-            }
-            else
-            {
-                return BadRequest(new ErrorResponse
-                {
-                    Code = ErrorCode.ServerError
-                });
-            }
         }
     }
 }

@@ -1,16 +1,24 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using WisePay.Web.Core.ClientInteraction;
 
 namespace WisePay.Web.Internals
 {
     public class ValidatorActionFilter : IActionFilter
     {
+        private JsonConfig _jsonConfig;
+
+        public ValidatorActionFilter(JsonConfig jsonConfig)
+        {
+            _jsonConfig = jsonConfig;
+        }
+
         public void OnActionExecuting(ActionExecutingContext filterContext)
         {
             if (!filterContext.ModelState.IsValid)
@@ -55,7 +63,8 @@ namespace WisePay.Web.Internals
                     errorResponse.InnerErrors = innerErrors;
                 }
 
-                var content = JsonConvert.SerializeObject(errorResponse);
+                var content = JsonConvert.SerializeObject(errorResponse, _jsonConfig.Formatter);
+
                 result.Content = content;
                 result.ContentType = "application/json";
 

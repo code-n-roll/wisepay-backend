@@ -160,6 +160,23 @@ namespace WisePay.Web.Purchases
             await UpdatePurchaseInfo(userPurchase.Purchase.Id);
         }
 
+        public async Task SendMoney(int currentUserId, int recipientId, decimal sum)
+        {
+            var me = await _db.Users.FindAsync(currentUserId);
+            var recipient = await _db.Users.FindAsync(recipientId);
+
+            if (recipient == null)
+                throw new ApiException(404, "User not found", ErrorCode.NotFound);
+
+            if (recipient.BankIdToken == null)
+                throw new ApiException(400, "Recipient haven't added any bank card");
+
+            if (me.BankActionToken == null)
+                throw new ApiException(400, "You don't have any bank card");
+
+            await _bankApi.SendMoney(me.BankActionToken, recipient.BankIdToken, sum);
+        }
+
         private Task<UserPurchase> GetUserPurchase(int purchaseId, int currentUserId)
         {
             return _db.UserPurchases
