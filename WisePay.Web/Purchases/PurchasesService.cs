@@ -73,7 +73,7 @@ namespace WisePay.Web.Purchases
                 .ToListAsync();
         }
 
-        public async Task<int> CreatePurchase(CreatePurchaseModel model, int currentUserId)
+        public async Task<Purchase> CreatePurchase(CreatePurchaseModel model, int currentUserId)
         {
             var purchase = new Purchase
             {
@@ -97,7 +97,7 @@ namespace WisePay.Web.Purchases
 
             _db.UserPurchases.AddRange(userPurchases);
             await _db.SaveChangesAsync();
-            return purchase.Id;
+            return purchase;
         }
 
         public async Task PayForPurchase(int purchaseId, int currentUserId, decimal? sum)
