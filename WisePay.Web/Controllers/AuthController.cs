@@ -46,7 +46,10 @@ namespace WisePay.Web.Controllers
             var response = new
             {
                 access_token = token,
-                email = user.Email
+                user = new {
+                    id = user.Id,
+                    email = user.Email
+                }
             };
 
             return Json(response);
@@ -74,7 +77,10 @@ namespace WisePay.Web.Controllers
             var response = new
             {
                 access_token = await _tokenService.GenerateToken(newUser),
-                email = newUser.Email
+                user = new {
+                    id = newUser.Id,
+                    email = newUser.Email
+                }
             };
 
             return Ok(response);
