@@ -62,6 +62,13 @@ namespace WisePay.Web.Avatars
             return Path.Combine(_env.WebRootPath, "avatars", filename);
         }
 
+        public string GetFullAvatarUrl(string filename)
+        {
+            if (filename == null) return null;
+
+            return Path.Combine(_config["StaticFilesUrl"], "avatars", filename);
+        }
+
         private string GenerateFilename()
         {
             return Path.GetFileNameWithoutExtension(Path.GetRandomFileName());

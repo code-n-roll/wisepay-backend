@@ -57,17 +57,19 @@ namespace WisePay.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> CreatePurchase([FromBody]CreatePurchaseModel model)
         {
-            if (model == null) throw new ApiException(400, "Invalid request body", ErrorCode.InvalidRequestFormat);
+            if (model == null)
+                throw new ApiException(400, "Invalid request body", ErrorCode.InvalidRequestFormat);
 
             var purchase = await _purchasesService.CreatePurchase(model, _currentUser.Id);
 
-            return Created($"/api/purchases/{purchase.Id}", new { purchase = purchase });
+            return Created($"/api/purchases/{purchase.Id}", _mapper.Map<MyPurchase>(purchase));
         }
 
         [HttpPatch("{purchaseId}")]
         public async Task<IActionResult> UpdatePurchase(int purchaseId, [FromBody]UpdatePurchaseModel model)
         {
-            if (model == null) throw new ApiException(400, "Invalid request body", ErrorCode.InvalidRequestFormat);
+            if (model == null)
+                throw new ApiException(400, "Invalid request body", ErrorCode.InvalidRequestFormat);
 
             await _purchasesService.UpdatePurchase(purchaseId, model, _currentUser.Id);
 

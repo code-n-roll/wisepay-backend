@@ -41,7 +41,16 @@ namespace WisePay
             services.AddCors();
 
             services
-                .AddIdentity<User, Role>()
+                .AddIdentity<User, Role>(options => {
+                    options.Password = new PasswordOptions
+                    {
+                        RequiredLength = 6,
+                        RequireNonAlphanumeric = false,
+                        RequireUppercase = false
+                    };
+
+                    options.User.RequireUniqueEmail = true;
+                })
                 .AddEntityFrameworkStores<WiseContext>()
                 .AddDefaultTokenProviders();
 

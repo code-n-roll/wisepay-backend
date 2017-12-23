@@ -63,10 +63,10 @@ namespace WisePay.Web.Controllers
         }
 
         [HttpPost("updateProfile")]
-        public async Task<IActionResult> UpdateProfile([FromBody]UpdateProfileModel model)
+        public async Task<CurrentUserViewModel> UpdateProfile([FromBody]UpdateProfileModel model)
         {
-            await _accountService.UpdateProfile(_currentUser.Id, model);
-            return Ok();
+            var user = await _accountService.UpdateProfile(_currentUser.Id, model);
+            return _mapper.Map<CurrentUserViewModel>(user);
         }
 
         [HttpGet]

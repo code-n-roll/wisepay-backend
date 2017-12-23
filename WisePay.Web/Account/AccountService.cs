@@ -10,6 +10,7 @@ using WisePay.Entities;
 using WisePay.Web.Account.Models;
 using WisePay.Web.Avatars;
 using WisePay.Web.Core.ClientInteraction;
+using WisePay.Web.Core.Helpers;
 using WisePay.Web.ExternalServices;
 using WisePay.Web.Internals;
 
@@ -58,7 +59,7 @@ namespace WisePay.Web.Account
             await _db.SaveChangesAsync();
         }
 
-        public async Task UpdateProfile(int userId, UpdateProfileModel model)
+        public async Task<User> UpdateProfile(int userId, UpdateProfileModel model)
         {
             using (var transaction = _db.Database.BeginTransaction())
             {
@@ -70,6 +71,7 @@ namespace WisePay.Web.Account
                     user.Email = model.Email ?? user.Email;
 
                     var result = await _userManager.UpdateAsync(user);
+                    ErrorResultsHandler.ThrowIfIdentityError(result);
 
                     if (!string.IsNullOrEmpty(model.NewPassword))
                     {
@@ -77,6 +79,7 @@ namespace WisePay.Web.Account
                             throw new ApiException(400, "Passwords don't match", ErrorCode.ValidationError);
 
                         result = await _userManager.ChangePasswordAsync(user, model.Password, model.NewPassword);
+                        ErrorResultsHandler.ThrowIfIdentityError(result);
                     }
 
                     if (model.Avatar != null)
@@ -90,8 +93,10 @@ namespace WisePay.Web.Account
 
                     await _userManager.UpdateAsync(user);
                     transaction.Commit();
+
+                    return user;
                 }
-                catch (Exception)
+                catch (Exception err)
                 {
                     transaction.Rollback();
                     throw;

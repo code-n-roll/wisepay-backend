@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -7,7 +8,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using WisePay.Entities;
+using WisePay.Web.Avatars;
 using WisePay.Web.Core.ClientInteraction;
 using WisePay.Web.Internals;
 using WisePay.Web.Purchases;
@@ -25,6 +28,7 @@ namespace WisePay.Web.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly IMapper _mapper;
+        private readonly AvatarsService _avatarsService;
         private readonly UsersService _usersService;
         private readonly ICurrentUserAccessor _currentUser;
         private readonly TeamsService _teamsService;
@@ -36,6 +40,7 @@ namespace WisePay.Web.Controllers
             PurchasesService purchasesService,
             UserManager<User> userManager,
             ICurrentUserAccessor currentUser,
+            AvatarsService avatarsService,
             IMapper mapper)
         {
             _userManager = userManager;
@@ -44,13 +49,22 @@ namespace WisePay.Web.Controllers
             _purchasesService = purchasesService;
             _currentUser = currentUser;
             _mapper = mapper;
+            _avatarsService = avatarsService;
         }
 
         [HttpGet]
         public async Task<IEnumerable<UserViewModel>> GetAll(string query)
         {
             var users = await _usersService.GetAllByQuery(query);
-            return _mapper.Map<IEnumerable<UserViewModel>>(users);
+            users = users.Where(u => u.Id != _currentUser.Id);
+
+            var userViewModels = users.Select(u =>
+            {
+                var userViewModel = _mapper.Map<UserViewModel>(u);
+                userViewModel.AvatarUrl = _avatarsService.GetFullAvatarUrl(u.AvatarPath);
+                return userViewModel;
+            });
+            return userViewModels;
         }
 
         [HttpGet("{id}")]
