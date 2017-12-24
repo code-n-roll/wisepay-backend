@@ -12,9 +12,10 @@ using WisePay.Entities;
 namespace WisePay.DataAccess.Migrations
 {
     [DbContext(typeof(WiseContext))]
-    partial class WiseContextModelSnapshot : ModelSnapshot
+    [Migration("20171224215336_AddStoreOrdersModels")]
+    partial class AddStoreOrdersModels
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -286,11 +287,11 @@ namespace WisePay.DataAccess.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("ItemId");
+                    b.Property<long>("ItemId");
 
                     b.Property<long>("Number");
 
-                    b.Property<decimal>("Price");
+                    b.Property<decimal>("Sum");
 
                     b.Property<int?>("UserPurchasePurchaseId");
 
@@ -300,7 +301,7 @@ namespace WisePay.DataAccess.Migrations
 
                     b.HasIndex("UserPurchaseUserId", "UserPurchasePurchaseId");
 
-                    b.ToTable("UserPurchaseItems");
+                    b.ToTable("UserPurchaseItem");
                 });
 
             modelBuilder.Entity("WisePay.Entities.UserTeam", b =>
@@ -413,8 +414,8 @@ namespace WisePay.DataAccess.Migrations
 
             modelBuilder.Entity("WisePay.Entities.UserPurchaseItem", b =>
                 {
-                    b.HasOne("WisePay.Entities.UserPurchase", "UserPurchase")
-                        .WithMany("Items")
+                    b.HasOne("WisePay.Entities.UserPurchase")
+                        .WithMany("UserPurchaseItems")
                         .HasForeignKey("UserPurchaseUserId", "UserPurchasePurchaseId");
                 });
 

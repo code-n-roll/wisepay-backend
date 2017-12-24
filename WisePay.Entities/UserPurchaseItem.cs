@@ -4,8 +4,10 @@
     {
         public int Id { get; set; }
 
-        public long ItemId { get; set; }
+        public UserPurchase UserPurchase { get; set; }
+
+        public string ItemId { get; set; }
         public long Number { get; set; }
-        public decimal Sum { get; set; }
+        public decimal Price { get; set; }
     }
 }

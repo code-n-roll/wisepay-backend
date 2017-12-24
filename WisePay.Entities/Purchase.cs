@@ -16,7 +16,6 @@ namespace WisePay.Entities
         public int CreatorId { get; set; }
         public User Creator { get; set; }
 
-        public int StoreOrderId { get; set; }
         public StoreOrder StoreOrder { get; set; }
 
         public ICollection<UserPurchase> UserPurchases { get; set; } = new List<UserPurchase>();
