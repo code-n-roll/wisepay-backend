@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.Internal;
 using System;
 using WisePay.DataAccess;
+using WisePay.Entities;
 
 namespace WisePay.DataAccess.Migrations
 {
@@ -101,14 +102,40 @@ namespace WisePay.DataAccess.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("WisePay.Entities.PaymentHistoryItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("PurchaseId");
+
+                    b.Property<decimal>("Sum");
+
+                    b.Property<DateTime>("Timestamp");
+
+                    b.Property<int>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PurchaseId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("PaymentHistory");
+                });
+
             modelBuilder.Entity("WisePay.Entities.Purchase", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<DateTime>("CreatedAt");
+
                     b.Property<int>("CreatorId");
 
                     b.Property<bool>("IsPayedOff");
+
+                    b.Property<string>("Name");
 
                     b.Property<decimal>("TotalSum");
 
@@ -147,9 +174,13 @@ namespace WisePay.DataAccess.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<int>("AdminId");
+
                     b.Property<string>("Name");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AdminId");
 
                     b.ToTable("Teams");
                 });
@@ -161,7 +192,11 @@ namespace WisePay.DataAccess.Migrations
 
                     b.Property<int>("AccessFailedCount");
 
-                    b.Property<string>("BankToken");
+                    b.Property<string>("AvatarPath");
+
+                    b.Property<string>("BankActionToken");
+
+                    b.Property<string>("BankIdToken");
 
                     b.Property<string>("CardLastFourDigits");
 
@@ -214,9 +249,9 @@ namespace WisePay.DataAccess.Migrations
 
                     b.Property<int>("PurchaseId");
 
-                    b.Property<bool>("IsPayedOff");
+                    b.Property<int>("Status");
 
-                    b.Property<decimal>("Sum");
+                    b.Property<decimal?>("Sum");
 
                     b.HasKey("UserId", "PurchaseId");
 
@@ -283,11 +318,32 @@ namespace WisePay.DataAccess.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("WisePay.Entities.PaymentHistoryItem", b =>
+                {
+                    b.HasOne("WisePay.Entities.Purchase", "Purchase")
+                        .WithMany()
+                        .HasForeignKey("PurchaseId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("WisePay.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("WisePay.Entities.Purchase", b =>
                 {
                     b.HasOne("WisePay.Entities.User", "Creator")
                         .WithMany()
                         .HasForeignKey("CreatorId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("WisePay.Entities.Team", b =>
+                {
+                    b.HasOne("WisePay.Entities.User", "Admin")
+                        .WithMany()
+                        .HasForeignKey("AdminId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

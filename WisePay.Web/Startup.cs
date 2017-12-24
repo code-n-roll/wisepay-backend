@@ -1,4 +1,5 @@
-﻿using System;
+using AutoMapper;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -34,12 +35,22 @@ namespace WisePay
         public void ConfigureServices(IServiceCollection services)
         {
             var pgConnectionString = Configuration.GetConnectionString("PgConnection");
+
             services.AddDbContext<WiseContext>(options => options.UseNpgsql(pgConnectionString));
 
             services.AddCors();
 
             services
-                .AddIdentity<User, Role>()
+                .AddIdentity<User, Role>(options => {
+                    options.Password = new PasswordOptions
+                    {
+                        RequiredLength = 6,
+                        RequireNonAlphanumeric = false,
+                        RequireUppercase = false
+                    };
+
+                    options.User.RequireUniqueEmail = true;
+                })
                 .AddEntityFrameworkStores<WiseContext>()
                 .AddDefaultTokenProviders();
 
@@ -63,20 +74,21 @@ namespace WisePay
                     };
                 });
 
+            services.AddAutoMapper(GetType().Assembly);
             services.AddInAppServices();
 
-            services.AddMvc();
+            services.AddMvc(options =>
+            {
+                options.Filters.Add(typeof(ValidatorActionFilter));
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-
-            app.UseCors(builder => builder.AllowAnyOrigin());
+            app.UseMiddleware<ErrorHandlingMiddleware>();
+            app.UseStaticFiles("/static");
+            app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
             app.UseAuthentication();
             app.UseMvc();
         }

@@ -9,6 +9,6 @@ namespace WisePay.Web.Core.ClientInteraction
     {
         public ErrorCode Code { get; set; }
         public string Message { get; set; }
-        public IEnumerable<ErrorResponse> InnerErrors { get; set; }
+        public IEnumerable<InnerError> InnerErrors { get; set; }
     }
 }

@@ -1,105 +1,80 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using WisePay.Entities;
+using WisePay.Web.Account;
+using WisePay.Web.Account.Models;
 using WisePay.Web.Auth;
+using WisePay.Web.Auth.Models;
+using WisePay.Web.Avatars;
 using WisePay.Web.Core.ClientInteraction;
+using WisePay.Web.ExternalServices;
+using WisePay.Web.Internals;
+using WisePay.Web.Users.Models;
 
 namespace WisePay.Web.Controllers
 {
     [Route("api/account")]
+    [Authorize]
     public class AccountController : Controller
     {
-        private UserManager<User> _userManager;
-        private AuthTokenService _tokenService;
+        private readonly UserManager<User> _userManager;
+        private readonly ICurrentUserAccessor _currentUser;
+        private readonly AccountService _accountService;
+        private readonly IMapper _mapper;
 
-        public AccountController(UserManager<User> userManager, AuthTokenService tokenService)
+        public AccountController(
+            UserManager<User> userManager,
+            AccountService accountService,
+            IMapper mapper,
+            ICurrentUserAccessor currentUser)
         {
             _userManager = userManager;
-            _tokenService = tokenService;
+            _currentUser = currentUser;
+            _accountService = accountService;
+            _mapper = mapper;
         }
 
-        [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody]RegisterModel registerModel)
+        [HttpPost("addCard")]
+        public async Task<CurrentUserViewModel> AddBankCard([FromBody]BankCardModel cardModel)
         {
-            if (registerModel.Password != registerModel.PasswordConfirmation)
-            {
-                return BadRequest(new ErrorResponse
-                {
-                    Code = ErrorCode.InvalidCredentials,
-                    Message = "Passwords don't match"
-                });
-            }
-
-            var newUser = new User()
-            {
-                Email = registerModel.Email,
-                UserName = registerModel.Email
-            };
-
-            var result = await _userManager.CreateAsync(newUser, registerModel.Password);
-
-            if (!result.Succeeded)
-            {
-                return GetErrorResult(result);
-            }
-
-            var response = new
-            {
-                access_token = await _tokenService.GenerateToken(newUser),
-                email = newUser.Email
-            };
-
-            return Ok(response);
+            var user = await _accountService.AddBankCard(_currentUser.Id, cardModel);
+            return _mapper.Map<CurrentUserViewModel>(user);
         }
 
-        private IActionResult GetErrorResult(IdentityResult result)
+        [HttpPost("updateAvatar")]
+        public async Task<IActionResult> UpdateAvatar(IFormFile avatarData)
         {
-            if (result == null)
+            byte[] avatarBytes = null;
+            using (var memoryStream = new MemoryStream())
             {
-                return BadRequest(new ErrorResponse
-                {
-                    Code = ErrorCode.ServerError
-                });
+                await avatarData.CopyToAsync(memoryStream);
+                avatarBytes = memoryStream.ToArray();
             }
 
-            if (result.Errors != null)
-            {
-                var errorResponse = new ErrorResponse();
+            await _accountService.UpdateAvatar(_currentUser.Id, avatarBytes);
+            return Ok();
+        }
 
-                if (result.Errors.Count() == 1)
-                {
-                    errorResponse.Code = ErrorCode.AuthError;
-                    errorResponse.Message = result.Errors.ElementAt(0).Description;
-                }
-                else
-                {
-                    errorResponse.Code = ErrorCode.MultipleErrors;
-                    var innerErrors = new List<ErrorResponse>();
+        [HttpPost("updateProfile")]
+        public async Task<CurrentUserViewModel> UpdateProfile([FromBody]UpdateProfileModel model)
+        {
+            var user = await _accountService.UpdateProfile(_currentUser.Id, model);
+            return _mapper.Map<CurrentUserViewModel>(user);
+        }
 
-                    foreach (var error in result.Errors)
-                    {
-                        innerErrors.Add(new ErrorResponse
-                        {
-                            Code = ErrorCode.AuthError,
-                            Message = error.Description
-                        });
-                    }
+        [HttpGet]
+        public async Task<ProfileViewModel> GetProfileData()
+        {
+            var user = await _userManager.FindByIdAsync(_currentUser.Id.ToString());
 
-                    errorResponse.InnerErrors = innerErrors;
-                }
-
-                return BadRequest(errorResponse);
-            }
-            else
-            {
-                return BadRequest(new ErrorResponse
-                {
-                    Code = ErrorCode.ServerError
-                });
-            }
+            return _mapper.Map<ProfileViewModel>(user);
         }
     }
 }
