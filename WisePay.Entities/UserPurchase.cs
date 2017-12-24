@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace WisePay.Entities
 {
@@ -14,5 +12,7 @@ namespace WisePay.Entities
 
         public decimal? Sum { get; set; }
         public PurchaseStatus Status { get; set; }
+
+        public ICollection<UserPurchaseItem> UserPurchaseItems { get; set; } = new HashSet<UserPurchaseItem>();
     }
 }
