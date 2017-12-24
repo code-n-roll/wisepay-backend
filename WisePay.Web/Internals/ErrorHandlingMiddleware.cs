@@ -44,7 +44,7 @@ namespace WisePay.Web.Internals
                 {
                     Code = e.Code,
                     Message = e.Message,
-                    InnerErrors = null
+                    InnerErrors = e.InnerErrors
                 };
             }
             else

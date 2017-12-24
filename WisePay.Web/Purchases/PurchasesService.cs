@@ -97,6 +97,11 @@ namespace WisePay.Web.Purchases
 
             _db.UserPurchases.AddRange(userPurchases);
             await _db.SaveChangesAsync();
+
+            purchase.UserPurchases = await _db.UserPurchases
+                .Include(up => up.User)
+                .Where(up => up.PurchaseId == purchase.Id)
+                .ToListAsync();
             return purchase;
         }
 
