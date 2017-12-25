@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace WisePay.Web.ExternalServices.Crawler.Responses
@@ -12,5 +13,7 @@ namespace WisePay.Web.ExternalServices.Crawler.Responses
 
         [Required]
         public string ImageUrl { get; set; }
+
+        public ICollection<CategoryResponse> Categories { get; set; } = new List<CategoryResponse>();
     }
 }

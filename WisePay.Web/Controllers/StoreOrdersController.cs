@@ -68,11 +68,11 @@ namespace WisePay.Web.Controllers
             return _mapper.Map<List<StoreResponse>>(stores);
         }
 
-        [HttpGet("categories/{storeId}")]
-        public async Task<List<CategoryResponse>> GetCategories(string storeId)
+        [HttpGet("stores/{storeId}")]
+        public async Task<StoreResponse> GetStoreContent(string storeId)
         {
-            var categories = await _storeOrdersService.GetCategories(storeId);
-            return _mapper.Map<List<CategoryResponse>>(categories);
+            var categories = await _storeOrdersService.GetStoreContent(storeId);
+            return _mapper.Map<StoreResponse>(categories);
         }
 
         [HttpGet("items")]

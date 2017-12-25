@@ -97,9 +97,9 @@ namespace WisePay.Web.Purchases
             return await _crawlerApi.GetStores();
         }
 
-        public async Task<ICollection<CategoryResponse>> GetCategories(string storeId)
+        public async Task<StoreResponse> GetStoreContent(string storeId)
         {
-            return await _crawlerApi.GetCategories(storeId);
+            return await _crawlerApi.GetStoreContent(storeId);
         }
 
         public async Task<ICollection<ItemResponse>> GetItems(string categoryId, IEnumerable<string> itemIds)
