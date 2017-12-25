@@ -61,22 +61,22 @@ namespace WisePay.Web.Controllers
             return Ok();
         }
 
-        [HttpGet]
+        [HttpGet("stores")]
         public async Task<IActionResult> GetStores()
         {
             var stores = await _storeOrdersService.GetStores();
             return Json(_mapper.Map<List<StoreResponse>>(stores));
         }
 
-        [HttpGet]
+        [HttpGet("categories")]
         public async Task<IActionResult> GetCategories(string storeId)
         {
             var categories = await _storeOrdersService.GetCategories(storeId);
             return Json(_mapper.Map<List<CategoryResponse>>(categories));
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetItems(string categoryId, string ids)
+        [HttpGet("items")]
+        public async Task<IActionResult> GetItems([FromQuery] string categoryId, [FromQuery] string ids)
         {
             var itemsIds = ids?.Split(",").ToList();
             var items = await _storeOrdersService.GetItems(categoryId, itemsIds);

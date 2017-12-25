@@ -55,10 +55,11 @@ namespace WisePay.Web.ExternalServices.Crawler
         {
             try
             {
+                var ids = itemIds == null ? "" : string.Join(",", itemIds);
                 return await _config["CrawlerAddress"]
                     .AppendPathSegment("items")
                     .SetQueryParam("categoryId", categoryId)
-                    .SetQueryParam("ids", string.Join(",", itemIds))
+                    .SetQueryParam("ids", ids)
                     .GetAsync()
                     .ReceiveJson<List<ItemResponse>>();
             }
