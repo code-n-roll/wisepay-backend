@@ -35,15 +35,14 @@ namespace WisePay.Web.ExternalServices.Crawler
             }
         }
 
-        public async Task<List<CategoryResponse>> GetCategories(string storeId)
+        public async Task<StoreResponse> GetStoreContent(string storeId)
         {
             try
             {
                 return await _config["CrawlerAddress"]
-                    .AppendPathSegment("categories")
-                    .SetQueryParam("storeId", storeId)
+                    .AppendPathSegment("stores/" + storeId)
                     .GetAsync()
-                    .ReceiveJson<List<CategoryResponse>>();
+                    .ReceiveJson<StoreResponse>();
             }
             catch (FlurlHttpException e)
             {
