@@ -16,7 +16,13 @@ namespace WisePay.Web.Purchases
                         Sum = up.Sum,
                         Status = up.Status,
                         UserId = up.UserId,
-                        Username = up.User != null ? up.User.UserName : null
+                        Username = up.User != null ? up.User.UserName : null,
+                        Items = up.Items.Select(item => new UserPurchaseItemInfo
+                        {
+                            ItemId = item.ItemId,
+                            Number = item.Number,
+                            Price = item.Price
+                        })
                     }))
                 );
 
@@ -24,7 +30,15 @@ namespace WisePay.Web.Purchases
                 .ForMember(p => p.Id, opt => opt.MapFrom(up => up.Purchase.Id))
                 .ForMember(p => p.CreatedAt, opt => opt.MapFrom(up => up.Purchase.CreatedAt))
                 .ForMember(p => p.CreatorName, opt => opt.MapFrom(up => up.Purchase.Creator.UserName))
-                .ForMember(p => p.Name, opt => opt.MapFrom(up => up.Purchase.Name));
+                .ForMember(p => p.Name, opt => opt.MapFrom(up => up.Purchase.Name))
+                .ForMember(p => p.Items, opt => opt.MapFrom(up => up.Items
+                    .Select(item => new UserPurchaseItemInfo
+                    {
+                        ItemId = item.ItemId,
+                        Number = item.Number,
+                        Price = item.Price
+                    }))
+                );
         }
     }
 }

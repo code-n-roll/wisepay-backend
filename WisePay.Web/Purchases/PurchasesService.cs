@@ -9,6 +9,7 @@ using WisePay.DataAccess;
 using WisePay.Entities;
 using WisePay.Web.Core.ClientInteraction;
 using WisePay.Web.ExternalServices;
+using WisePay.Web.ExternalServices.Bank;
 using WisePay.Web.Internals;
 using WisePay.Web.Purchases.Models;
 
@@ -41,17 +42,21 @@ namespace WisePay.Web.Purchases
         {
             var myPurchases = await _db.Purchases
                 .Where(p => p.CreatorId == userId)
-                .Include(p => p.UserPurchases)
-                .ThenInclude(up => up.User)
+                .Include(up => up.UserPurchases)
+                .ThenInclude(p => p.User)
+                .Include(up => up.UserPurchases)
+                .ThenInclude(p => p.Items)
                 .ToListAsync();
 
-            var purchasesForMe = await _db.UserPurchases
+            var purchasesWithMe = await _db.UserPurchases
                 .Include(up => up.Purchase)
                 .ThenInclude(p => p.Creator)
+                .Include(up => up.Items)
                 .Where(up => up.UserId == userId)
+                .Where(up => up.Purchase.CreatorId != userId)
                 .ToListAsync();
 
-            return (myPurchases, purchasesForMe);
+            return (myPurchases, purchasesWithMe);
         }
 
         public async Task<Purchase> GetPurchase(int purchaseId)
@@ -77,6 +82,7 @@ namespace WisePay.Web.Purchases
         {
             var purchase = new Purchase
             {
+                Type = PurchaseType.Custom,
                 CreatorId = currentUserId,
                 IsPayedOff = false,
                 Name = model.Name,
@@ -158,7 +164,7 @@ namespace WisePay.Web.Purchases
             userPurchase.Status = PurchaseStatus.Declined;
             if (userPurchase.Sum != null)
             {
-                userPurchase.Purchase.TotalSum -= userPurchase.Sum.Value;   
+                userPurchase.Purchase.TotalSum -= userPurchase.Sum.Value;
             }
             await _db.SaveChangesAsync();
 

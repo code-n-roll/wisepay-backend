@@ -11,11 +11,13 @@ namespace WisePay.DataAccess
         public WiseContext(DbContextOptions<WiseContext> options) : base(options) { }
 
         public DbSet<Purchase> Purchases { get; set; }
+        public DbSet<StoreOrder> StoreOrders { get; set; }
         public DbSet<Team> Teams { get; set; }
 
         // Connection tables
         public DbSet<UserTeam> UserTeams { get; set; }
         public DbSet<UserPurchase> UserPurchases { get; set; }
+        public DbSet<UserPurchaseItem> UserPurchaseItems { get; set; }
 
         public DbSet<PaymentHistoryItem> PaymentHistory { get; set; }
 

@@ -1,19 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Flurl;
 using Flurl.Http;
-using Newtonsoft.Json;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using WisePay.Web.Account.Models;
-using WisePay.Web.ExternalServices.Responses;
+using WisePay.Web.ExternalServices.Bank.Responses;
 using WisePay.Web.Internals;
-using Newtonsoft.Json.Serialization;
-using System.Text;
 
-namespace WisePay.Web.ExternalServices
+namespace WisePay.Web.ExternalServices.Bank
 {
     public class BankApi
     {

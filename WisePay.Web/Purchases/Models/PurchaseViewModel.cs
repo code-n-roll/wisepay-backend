@@ -12,5 +12,6 @@ namespace WisePay.Web.Purchases.Models
         public DateTime CreatedAt { get; set; }
 
         public bool IsOwner { get; protected set; }
+
     }
 }
