@@ -92,17 +92,17 @@ namespace WisePay.Web.Purchases
                 .ToListAsync();
         }
 
-        public async Task<List<StoreResponse>> GetStores()
+        public async Task<ICollection<StoreResponse>> GetStores()
         {
             return await _crawlerApi.GetStores();
         }
 
-        public async Task<List<CategoryResponse>> GetCategories(string storeId)
+        public async Task<ICollection<CategoryResponse>> GetCategories(string storeId)
         {
             return await _crawlerApi.GetCategories(storeId);
         }
 
-        public async Task<List<ItemResponse>> GetItems(string categoryId, IEnumerable<string> itemIds)
+        public async Task<ICollection<ItemResponse>> GetItems(string categoryId, IEnumerable<string> itemIds)
         {
             return await _crawlerApi.GetItems(categoryId, itemIds);
         }

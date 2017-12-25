@@ -40,8 +40,7 @@ namespace WisePay.Web.ExternalServices.Crawler
             try
             {
                 return await _config["CrawlerAddress"]
-                    .AppendPathSegment("categories")
-                    .SetQueryParam("storeId", storeId)
+                    .AppendPathSegment("categories/" + storeId)
                     .GetAsync()
                     .ReceiveJson<List<CategoryResponse>>();
             }
