@@ -137,7 +137,7 @@ namespace WisePay.DataAccess.Migrations
 
                     b.Property<string>("Name");
 
-                    b.Property<decimal>("TotalSum");
+                    b.Property<decimal?>("TotalSum");
 
                     b.Property<int>("Type");
 

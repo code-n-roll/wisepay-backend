@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,7 +18,7 @@ using WisePay.Web.Users.Models;
 namespace WisePay.Web.Controllers
 {
     [Produces("application/json")]
-    [Route("api/Teams")]
+    [Route("api/teams")]
     [Authorize]
     public class TeamsController : Controller
     {
@@ -50,8 +50,15 @@ namespace WisePay.Web.Controllers
                 throw new ApiException(400, "Invalid user id list", ErrorCode.InvalidRequestFormat);
             }
 
-            var teamId = await _teamsService.CreateTeam(model, _currentUser.Id);
-            return Created($"api/teams/{teamId}", new { Id = teamId });
+            var team = await _teamsService.CreateTeam(model, _currentUser.Id);
+            return Created($"api/teams/{team.Id}", _mapper.Map<TeamViewModel>(team));
+        }
+
+        [HttpGet]
+        public async Task<IEnumerable<TeamViewModel>> GetMyTeams()
+        {
+            var teams = await _teamsService.GetUserTeams(_currentUser.Id);
+            return _mapper.Map<IEnumerable<TeamViewModel>>(teams);
         }
 
         [HttpGet("{teamId}/users")]

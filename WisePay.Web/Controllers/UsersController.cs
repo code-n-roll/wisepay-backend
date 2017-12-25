@@ -83,12 +83,5 @@ namespace WisePay.Web.Controllers
             var me = await _userManager.GetUserAsync(User);
             return _mapper.Map<CurrentUserViewModel>(me);
         }
-
-        [HttpGet("me/teams")]
-        public async Task<IEnumerable<TeamPreview>> GetMyTeams()
-        {
-            var teams = await _teamsService.GetUserTeams(_currentUser.Id);
-            return _mapper.Map<IEnumerable<TeamPreview>>(teams);
-        }
     }
 }

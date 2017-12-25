@@ -97,7 +97,7 @@ namespace WisePay.Web.Account
 
                     return user;
                 }
-                catch (Exception err)
+                catch (Exception)
                 {
                     transaction.Rollback();
                     throw;

@@ -15,7 +15,7 @@ namespace WisePay.Web.Purchases.Models
 
         public string CreatorName { get; set; }
 
-        public decimal Sum { get; set; }
+        public decimal? Sum { get; set; }
         public PurchaseStatus Status { get; set; }
 
         public IEnumerable<UserPurchaseItemInfo> Items { get; set; }
