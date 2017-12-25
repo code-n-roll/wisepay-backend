@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,7 +20,7 @@ namespace WisePay.Web.Teams
             _db = db;
         }
 
-        public async Task<int> CreateTeam(CreateTeamModel model, int adminId)
+        public async Task<Team> CreateTeam(CreateTeamModel model, int adminId)
         {
             var team = new Team
             {
@@ -45,15 +45,24 @@ namespace WisePay.Web.Teams
 
             await _db.SaveChangesAsync();
 
-            return team.Id;
+            var userTeams = await _db.UserTeams
+                .Include(ut => ut.User)
+                .Where(ut => ut.TeamId == team.Id)
+                .ToListAsync();
+
+            team.UserTeams = userTeams;
+
+            return team;
         }
 
         public async Task<IEnumerable<Team>> GetUserTeams(int userId)
         {
-            return await _db.UserTeams
-                .Include(ut => ut.User)
-                .Where(ut => ut.UserId == userId)
-                .Select(ut => ut.Team)
+            return await _db.Teams
+                .Include(t => t.UserTeams)
+                .ThenInclude(ut => ut.User)
+                .Where(t => t.UserTeams
+                    .Where(ut => ut.UserId == userId)
+                    .Count() != 0)
                 .ToListAsync();
         }
 
