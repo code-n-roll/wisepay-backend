@@ -1,4 +1,5 @@
-﻿using System;
+using AutoMapper;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,6 +18,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using WisePay.Web.Auth;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using WisePay.Web.Internals;
 
 namespace WisePay
 {
@@ -36,10 +38,19 @@ namespace WisePay
 
             services.AddDbContext<WiseContext>(options => options.UseNpgsql(pgConnectionString));
 
-            var serviceProvider = services.BuildServiceProvider();
+            services.AddCors();
 
             services
-                .AddIdentity<User, Role>()
+                .AddIdentity<User, Role>(options => {
+                    options.Password = new PasswordOptions
+                    {
+                        RequiredLength = 6,
+                        RequireNonAlphanumeric = false,
+                        RequireUppercase = false
+                    };
+
+                    options.User.RequireUniqueEmail = true;
+                })
                 .AddEntityFrameworkStores<WiseContext>()
                 .AddDefaultTokenProviders();
 
@@ -54,26 +65,30 @@ namespace WisePay
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuer = true,
-                        ValidIssuer = AuthOptions.Issuer,
+                        ValidIssuer = AuthConfig.Issuer,
                         ValidateAudience = true,
-                        ValidAudience = AuthOptions.Audience,
+                        ValidAudience = AuthConfig.Audience,
                         ValidateLifetime = true,
-                        IssuerSigningKey = AuthOptions.SymmetricSecurityKey,
+                        IssuerSigningKey = AuthConfig.SymmetricSecurityKey,
                         ValidateIssuerSigningKey = true,
                     };
                 });
 
-            services.AddMvc();
+            services.AddAutoMapper(GetType().Assembly);
+            services.AddInAppServices();
+
+            services.AddMvc(options =>
+            {
+                options.Filters.Add(typeof(ValidatorActionFilter));
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-
+            app.UseMiddleware<ErrorHandlingMiddleware>();
+            app.UseStaticFiles("/static");
+            app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
             app.UseAuthentication();
             app.UseMvc();
         }

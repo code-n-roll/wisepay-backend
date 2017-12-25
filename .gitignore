@@ -1,3 +1,9 @@
+# Sensitive files
+appsettings.*.json
+
+# User data
+WisePay.Web/wwwroot/
+
 *.swp
 *.*~
 project.lock.json
@@ -30,3 +36,6 @@ msbuild.wrn
 
 # Visual Studio 2015
 .vs/
+
+# Rider
+.idea/

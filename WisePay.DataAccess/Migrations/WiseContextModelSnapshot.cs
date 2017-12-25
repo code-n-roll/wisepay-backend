@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.Internal;
 using System;
 using WisePay.DataAccess;
+using WisePay.Entities;
 
 namespace WisePay.DataAccess.Migrations
 {
@@ -101,6 +102,52 @@ namespace WisePay.DataAccess.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("WisePay.Entities.PaymentHistoryItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("PurchaseId");
+
+                    b.Property<decimal>("Sum");
+
+                    b.Property<DateTime>("Timestamp");
+
+                    b.Property<int>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PurchaseId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("PaymentHistory");
+                });
+
+            modelBuilder.Entity("WisePay.Entities.Purchase", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("CreatedAt");
+
+                    b.Property<int>("CreatorId");
+
+                    b.Property<bool>("IsPayedOff");
+
+                    b.Property<string>("Name");
+
+                    b.Property<decimal?>("TotalSum");
+
+                    b.Property<int>("Type");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatorId");
+
+                    b.ToTable("Purchases");
+                });
+
             modelBuilder.Entity("WisePay.Entities.Role", b =>
                 {
                     b.Property<int>("Id")
@@ -124,12 +171,55 @@ namespace WisePay.DataAccess.Migrations
                     b.ToTable("AspNetRoles");
                 });
 
+            modelBuilder.Entity("WisePay.Entities.StoreOrder", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<bool>("IsSubmitted");
+
+                    b.Property<int>("PurchaseId");
+
+                    b.Property<string>("StoreId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PurchaseId")
+                        .IsUnique();
+
+                    b.ToTable("StoreOrders");
+                });
+
+            modelBuilder.Entity("WisePay.Entities.Team", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("AdminId");
+
+                    b.Property<string>("Name");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AdminId");
+
+                    b.ToTable("Teams");
+                });
+
             modelBuilder.Entity("WisePay.Entities.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<int>("AccessFailedCount");
+
+                    b.Property<string>("AvatarPath");
+
+                    b.Property<string>("BankActionToken");
+
+                    b.Property<string>("BankIdToken");
+
+                    b.Property<string>("CardLastFourDigits");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken();
@@ -174,6 +264,58 @@ namespace WisePay.DataAccess.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
+            modelBuilder.Entity("WisePay.Entities.UserPurchase", b =>
+                {
+                    b.Property<int>("UserId");
+
+                    b.Property<int>("PurchaseId");
+
+                    b.Property<int>("Status");
+
+                    b.Property<decimal?>("Sum");
+
+                    b.HasKey("UserId", "PurchaseId");
+
+                    b.HasIndex("PurchaseId");
+
+                    b.ToTable("UserPurchases");
+                });
+
+            modelBuilder.Entity("WisePay.Entities.UserPurchaseItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("ItemId");
+
+                    b.Property<long>("Number");
+
+                    b.Property<decimal>("Price");
+
+                    b.Property<int?>("UserPurchasePurchaseId");
+
+                    b.Property<int?>("UserPurchaseUserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserPurchaseUserId", "UserPurchasePurchaseId");
+
+                    b.ToTable("UserPurchaseItems");
+                });
+
+            modelBuilder.Entity("WisePay.Entities.UserTeam", b =>
+                {
+                    b.Property<int>("UserId");
+
+                    b.Property<int>("TeamId");
+
+                    b.HasKey("UserId", "TeamId");
+
+                    b.HasIndex("TeamId");
+
+                    b.ToTable("UserTeams");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
                 {
                     b.HasOne("WisePay.Entities.Role")
@@ -215,6 +357,76 @@ namespace WisePay.DataAccess.Migrations
                 {
                     b.HasOne("WisePay.Entities.User")
                         .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("WisePay.Entities.PaymentHistoryItem", b =>
+                {
+                    b.HasOne("WisePay.Entities.Purchase", "Purchase")
+                        .WithMany()
+                        .HasForeignKey("PurchaseId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("WisePay.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("WisePay.Entities.Purchase", b =>
+                {
+                    b.HasOne("WisePay.Entities.User", "Creator")
+                        .WithMany()
+                        .HasForeignKey("CreatorId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("WisePay.Entities.StoreOrder", b =>
+                {
+                    b.HasOne("WisePay.Entities.Purchase", "Purchase")
+                        .WithOne("StoreOrder")
+                        .HasForeignKey("WisePay.Entities.StoreOrder", "PurchaseId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("WisePay.Entities.Team", b =>
+                {
+                    b.HasOne("WisePay.Entities.User", "Admin")
+                        .WithMany()
+                        .HasForeignKey("AdminId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("WisePay.Entities.UserPurchase", b =>
+                {
+                    b.HasOne("WisePay.Entities.Purchase", "Purchase")
+                        .WithMany("UserPurchases")
+                        .HasForeignKey("PurchaseId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("WisePay.Entities.User", "User")
+                        .WithMany("UserPurchases")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("WisePay.Entities.UserPurchaseItem", b =>
+                {
+                    b.HasOne("WisePay.Entities.UserPurchase", "UserPurchase")
+                        .WithMany("Items")
+                        .HasForeignKey("UserPurchaseUserId", "UserPurchasePurchaseId");
+                });
+
+            modelBuilder.Entity("WisePay.Entities.UserTeam", b =>
+                {
+                    b.HasOne("WisePay.Entities.Team", "Team")
+                        .WithMany("UserTeams")
+                        .HasForeignKey("TeamId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("WisePay.Entities.User", "User")
+                        .WithMany("UserTeams")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });

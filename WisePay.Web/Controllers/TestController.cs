@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -9,6 +8,7 @@ using WisePay.Entities;
 namespace WisePay.Web.Controllers
 {
     [Route("api/Test")]
+    [Authorize]
     public class TestController : Controller
     {
         private UserManager<User> _userManager;
@@ -18,7 +18,6 @@ namespace WisePay.Web.Controllers
             _userManager = userManager;
         }
 
-        [Authorize]
         [HttpGet]
         public async Task<IEnumerable<string>> GetValues()
         {
