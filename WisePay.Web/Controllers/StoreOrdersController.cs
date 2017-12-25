@@ -62,25 +62,25 @@ namespace WisePay.Web.Controllers
         }
 
         [HttpGet("stores")]
-        public async Task<IActionResult> GetStores()
+        public async Task<List<StoreResponse>> GetStores()
         {
             var stores = await _storeOrdersService.GetStores();
-            return Json(_mapper.Map<List<StoreResponse>>(stores));
+            return _mapper.Map<List<StoreResponse>>(stores);
         }
 
         [HttpGet("categories/{storeId}")]
-        public async Task<IActionResult> GetCategories(string storeId)
+        public async Task<List<CategoryResponse>> GetCategories(string storeId)
         {
             var categories = await _storeOrdersService.GetCategories(storeId);
-            return Json(_mapper.Map<ICollection<CategoryResponse>>(categories));
+            return _mapper.Map<List<CategoryResponse>>(categories);
         }
 
         [HttpGet("items")]
-        public async Task<IActionResult> GetItems([FromQuery] string categoryId, [FromQuery] string ids)
+        public async Task<List<ItemResponse>> GetItems([FromQuery] string categoryId, [FromQuery] string ids)
         {
             var itemsIds = ids?.Split(",").ToList();
             var items = await _storeOrdersService.GetItems(categoryId, itemsIds);
-            return Json(_mapper.Map<List<ItemResponse>>(items));
+            return _mapper.Map<List<ItemResponse>>(items);
         }
     }
 }
