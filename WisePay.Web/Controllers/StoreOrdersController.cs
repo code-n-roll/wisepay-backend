@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using WisePay.Entities;
 using WisePay.Web.Core.ClientInteraction;
+using WisePay.Web.ExternalServices.Crawler.Responses;
 using WisePay.Web.Internals;
 using WisePay.Web.Purchases;
 using WisePay.Web.Purchases.Models;
@@ -59,6 +61,26 @@ namespace WisePay.Web.Controllers
             return Ok();
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetStores()
+        {
+            var stores = await _storeOrdersService.GetStores();
+            return Json(_mapper.Map<List<StoreResponse>>(stores));
+        }
 
+        [HttpGet]
+        public async Task<IActionResult> GetCategories(string storeId)
+        {
+            var categories = await _storeOrdersService.GetCategories(storeId);
+            return Json(_mapper.Map<List<CategoryResponse>>(categories));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetItems(string categoryId, string ids)
+        {
+            var itemsIds = ids?.Split(",").ToList();
+            var items = await _storeOrdersService.GetItems(categoryId, itemsIds);
+            return Json(_mapper.Map<List<ItemResponse>>(items));
+        }
     }
 }

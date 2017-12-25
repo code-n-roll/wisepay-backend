@@ -8,6 +8,8 @@ using WisePay.Web.Account;
 using WisePay.Web.Auth;
 using WisePay.Web.Avatars;
 using WisePay.Web.ExternalServices;
+using WisePay.Web.ExternalServices.Bank;
+using WisePay.Web.ExternalServices.Crawler;
 using WisePay.Web.Purchases;
 using WisePay.Web.Teams;
 using WisePay.Web.Users;
@@ -27,6 +29,7 @@ namespace WisePay.Web.Internals
             services.AddScoped<StoreOrdersService>();
 
             services.AddScoped<BankApi>();
+            services.AddScoped<CrawlerApi>();
 
             services.AddScoped<ICurrentUserAccessor, CurrentUserAccessor>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();

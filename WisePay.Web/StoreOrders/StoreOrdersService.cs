@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using WisePay.DataAccess;
 using WisePay.Entities;
-using WisePay.Web.ExternalServices;
+using WisePay.Web.ExternalServices.Crawler;
+using WisePay.Web.ExternalServices.Crawler.Responses;
 using WisePay.Web.Purchases.Models;
 
 namespace WisePay.Web.Purchases
@@ -12,12 +14,12 @@ namespace WisePay.Web.Purchases
     public class StoreOrdersService
     {
         private readonly WiseContext _db;
-        private readonly BankApi _bankApi;
+        private readonly CrawlerApi _crawlerApi;
 
-        public StoreOrdersService(WiseContext db, BankApi bankApi)
+        public StoreOrdersService(WiseContext db, CrawlerApi crawlerApi)
         {
             _db = db;
-            _bankApi = bankApi;
+            _crawlerApi = crawlerApi;
         }
 
         public async Task<Purchase> CreatePurchase(CreateStoreOrdersModel model, UserStoreOrderModel currentUser)
@@ -85,5 +87,19 @@ namespace WisePay.Web.Purchases
             await _db.SaveChangesAsync();
         }
 
+        public async Task<List<StoreResponse>> GetStores()
+        {
+            return await _crawlerApi.GetStores();
+        }
+
+        public async Task<List<CategoryResponse>> GetCategories(string storeId)
+        {
+            return await _crawlerApi.GetCategories(storeId);
+        }
+
+        public async Task<List<ItemResponse>> GetItems(string categoryId, IEnumerable<string> itemIds)
+        {
+            return await _crawlerApi.GetItems(categoryId, itemIds);
+        }
     }
 }

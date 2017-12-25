@@ -9,6 +9,7 @@ using WisePay.DataAccess;
 using WisePay.Entities;
 using WisePay.Web.Core.ClientInteraction;
 using WisePay.Web.ExternalServices;
+using WisePay.Web.ExternalServices.Bank;
 using WisePay.Web.Internals;
 using WisePay.Web.Purchases.Models;
 
