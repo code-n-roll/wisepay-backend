@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace WisePay.Web.Purchases.Models
 {
@@ -6,6 +6,6 @@ namespace WisePay.Web.Purchases.Models
     {
         [Required]
         public int UserId { get; set; }
-        public decimal Sum { get; set; }
+        public decimal? Sum { get; set; }
     }
 }

@@ -7,8 +7,7 @@ namespace WisePay.Web.Purchases.Models
     {
         [Required]
         public string Name { get; set; }
-        [Required]
-        public decimal TotalSum { get; set; }
+        public decimal? TotalSum { get; set; }
         [Required]
         public IEnumerable<UserPurchaseModel> Users { get; set; }
     }

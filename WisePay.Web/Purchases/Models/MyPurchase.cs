@@ -9,7 +9,7 @@ namespace WisePay.Web.Purchases.Models
             IsOwner = true;
         }
 
-        public decimal TotalSum { get; set; }
+        public decimal? TotalSum { get; set; }
         public bool IsPayedOff { get; set; }
 
         public IEnumerable<UserPurchaseInfo> Users { get; set; }
