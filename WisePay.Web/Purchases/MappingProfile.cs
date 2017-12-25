@@ -24,7 +24,8 @@ namespace WisePay.Web.Purchases
                 .ForMember(p => p.Id, opt => opt.MapFrom(up => up.Purchase.Id))
                 .ForMember(p => p.CreatedAt, opt => opt.MapFrom(up => up.Purchase.CreatedAt))
                 .ForMember(p => p.CreatorName, opt => opt.MapFrom(up => up.Purchase.Creator.UserName))
-                .ForMember(p => p.Name, opt => opt.MapFrom(up => up.Purchase.Name));
+                .ForMember(p => p.Name, opt => opt.MapFrom(up => up.Purchase.Name))
+                .ForMember(p => p.Items, opt => opt.MapFrom(up => up.Items));
         }
     }
 }

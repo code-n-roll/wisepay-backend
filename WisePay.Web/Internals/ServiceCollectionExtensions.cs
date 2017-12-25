@@ -22,15 +22,16 @@ namespace WisePay.Web.Internals
             services.AddScoped<UsersService>();
             services.AddScoped<TeamsService>();
             services.AddScoped<PurchasesService>();
-            services.AddScoped<AccountService>();            
-            services.AddScoped<AvatarsService>();            
+            services.AddScoped<AccountService>();
+            services.AddScoped<AvatarsService>();
+            services.AddScoped<StoreOrdersService>();
 
             services.AddScoped<BankApi>();
 
             services.AddScoped<ICurrentUserAccessor, CurrentUserAccessor>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<JsonConfig>();
-            
+
             return services;
         }
     }

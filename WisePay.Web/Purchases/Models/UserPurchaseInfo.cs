@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using WisePay.Entities;
 
 namespace WisePay.Web.Purchases.Models
@@ -9,5 +10,7 @@ namespace WisePay.Web.Purchases.Models
 
         public decimal? Sum { get; set; }
         public PurchaseStatus Status { get; set; }
+
+        public IEnumerable<UserPurchaseItemInfo> Items { get; set; }
     }
 }
