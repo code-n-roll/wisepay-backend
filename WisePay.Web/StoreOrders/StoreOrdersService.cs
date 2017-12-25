@@ -51,40 +51,45 @@ namespace WisePay.Web.Purchases
                 Status = PurchaseStatus.New
             });
 
-
             _db.UserPurchases.AddRange(userPurchases);
             await _db.SaveChangesAsync();
 
-            purchase.UserPurchases = await _db.UserPurchases
-                .Include(up => up.User)
-                .Where(up => up.PurchaseId == purchase.Id)
-                .ToListAsync();
+            purchase.UserPurchases = new List<UserPurchase>(userPurchases);
+
             return purchase;
         }
 
         public async Task UpdateOrder(int purchaseId, SubmitOrderItemsModel model, int currentUserId)
         {
-            var purchase = await _db.Purchases.FindAsync(purchaseId);
-            var userPurchase = purchase.UserPurchases.First(up => up.UserId == currentUserId);
+            var userPurchase = await _db.UserPurchases
+                .Where(t => t.PurchaseId == purchaseId)
+                .Where(t => t.UserId == currentUserId)
+                .FirstAsync();
+
+            var prevItems = await _db.UserPurchaseItems
+                .Include(t => t.UserPurchase)
+                .Where(t => t.UserPurchase.PurchaseId == purchaseId)
+                .Where(t => t.UserPurchase.UserId == currentUserId)
+                .ToListAsync();
 
             var items = model.Items.Select(u => new UserPurchaseItem
             {
+                UserPurchase = userPurchase,
+
                 ItemId = u.ItemId,
                 Number = u.Number,
                 Price = u.Price
             });
+
+            _db.UserPurchaseItems.RemoveRange(prevItems);
             _db.UserPurchaseItems.AddRange(items);
             await _db.SaveChangesAsync();
-
-            userPurchase.Items.Clear();
 
             userPurchase.Items = await _db.UserPurchaseItems
                 .Include(up => up.UserPurchase)
                 .Where(up => up.UserPurchase.UserId == userPurchase.UserId)
                 .Where(up => up.UserPurchase.PurchaseId == userPurchase.PurchaseId)
                 .ToListAsync();
-
-            await _db.SaveChangesAsync();
         }
 
         public async Task<List<StoreResponse>> GetStores()
