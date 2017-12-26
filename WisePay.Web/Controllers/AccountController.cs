@@ -65,7 +65,8 @@ namespace WisePay.Web.Controllers
                 avatarBytes = memoryStream.ToArray();
             }
 
-            await _accountService.UpdateAvatar(_currentUser.Id, avatarBytes);
+            await _accountService.UpdateAvatar(_currentUser.Id,
+                avatarBytes, Path.GetExtension(avatarData.FileName));
             return Ok();
         }
 

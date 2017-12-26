@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Flurl;
 using Jdenticon;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -48,9 +49,9 @@ namespace WisePay.Web.Avatars
             }
         }
 
-        public async Task<string> UpdateAvatar(byte[] avatarBytes)
+        public async Task<string> UpdateAvatar(byte[] avatarBytes, string extension)
         {
-            var filename = GenerateFilename();
+            var filename = Path.ChangeExtension(GenerateFilename(), extension);
             var pathToSave = GetFullAvatarPath(filename);
 
             await File.WriteAllBytesAsync(pathToSave, avatarBytes);
@@ -66,7 +67,7 @@ namespace WisePay.Web.Avatars
         {
             if (filename == null) return null;
 
-            return Path.Combine(_config["StaticFilesUrl"], "avatars", filename);
+            return Url.Combine(_config["StaticFilesUrl"], "avatars", filename);
         }
 
         private string GenerateFilename()

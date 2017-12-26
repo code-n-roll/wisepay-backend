@@ -52,10 +52,7 @@ namespace WisePay.Web.Controllers
             var response = new
             {
                 access_token = token,
-                user = new {
-                    id = user.Id,
-                    email = user.Email
-                }
+                user = _mapper.Map<CurrentUserViewModel>(user)
             };
 
             return Json(response);

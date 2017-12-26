@@ -62,11 +62,11 @@ namespace WisePay.Web.Account
             return user;
         }
 
-        public async Task UpdateAvatar(int userId, byte[] avatarBytes)
+        public async Task UpdateAvatar(int userId, byte[] avatarBytes, string extension)
         {
             var user = await _db.Users.FindAsync(userId);
 
-            var newAvatarPath = await _avatarsService.UpdateAvatar(avatarBytes);
+            var newAvatarPath = await _avatarsService.UpdateAvatar(avatarBytes, extension);
             _avatarsService.DeleteAvatar(user.AvatarPath);
             user.AvatarPath = newAvatarPath;
 
@@ -106,8 +106,17 @@ namespace WisePay.Web.Account
                             avatarBytes = memoryStream.ToArray();
                         }
 
-                        var newAvatarPath = await _avatarsService.UpdateAvatar(avatarBytes);
-                        _avatarsService.DeleteAvatar(user.AvatarPath);
+                        var fileExtension = Path.GetExtension(model.Avatar.FileName);
+
+
+                        var newAvatarPath =
+                            await _avatarsService.UpdateAvatar(avatarBytes, fileExtension);
+
+                        if (user.AvatarPath != null)
+                        {
+                            _avatarsService.DeleteAvatar(user.AvatarPath);
+                        }
+
                         user.AvatarPath = newAvatarPath;
                     }
 
