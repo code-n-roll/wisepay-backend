@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
@@ -97,7 +98,13 @@ namespace WisePay.Web.Account
 
                     if (model.Avatar != null)
                     {
-                        var avatarBytes = Convert.FromBase64String(model.Avatar);
+                        byte[] avatarBytes = null;
+
+                        using (var memoryStream = new MemoryStream())
+                        {
+                            await model.Avatar.CopyToAsync(memoryStream);
+                            avatarBytes = memoryStream.ToArray();
+                        }
 
                         var newAvatarPath = await _avatarsService.UpdateAvatar(avatarBytes);
                         _avatarsService.DeleteAvatar(user.AvatarPath);

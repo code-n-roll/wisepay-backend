@@ -10,6 +10,8 @@ using System.Linq;
 using System.Collections.Generic;
 using WisePay.Web.Avatars;
 using WisePay.Web.Core.Helpers;
+using AutoMapper;
+using WisePay.Web.Users.Models;
 
 namespace WisePay.Web.Controllers
 {
@@ -19,15 +21,19 @@ namespace WisePay.Web.Controllers
         private UserManager<User> _userManager;
         private AuthTokenService _tokenService;
         private AvatarsService _avatarsService;
+        private IMapper _mapper;
 
         public AuthController(
             UserManager<User> userManager,
             AuthTokenService tokenService,
-            AvatarsService avatarsService)
+            AvatarsService avatarsService,
+            IMapper mapper
+        )
         {
             _userManager = userManager;
             _tokenService = tokenService;
             _avatarsService = avatarsService;
+            _mapper = mapper;
         }
 
         [HttpPost("sign_in")]
@@ -77,10 +83,7 @@ namespace WisePay.Web.Controllers
             var response = new
             {
                 access_token = await _tokenService.GenerateToken(newUser),
-                user = new {
-                    id = newUser.Id,
-                    email = newUser.Email
-                }
+                user = _mapper.Map<CurrentUserViewModel>(newUser)
             };
 
             return Ok(response);
