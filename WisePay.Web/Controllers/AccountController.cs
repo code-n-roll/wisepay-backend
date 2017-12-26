@@ -48,6 +48,13 @@ namespace WisePay.Web.Controllers
             return _mapper.Map<CurrentUserViewModel>(user);
         }
 
+        [HttpPost("removeCard")]
+        public async Task<CurrentUserViewModel> RemoveBankCard()
+        {
+            var user = await _accountService.RemoveBankCard(_currentUser.Id);
+            return _mapper.Map<CurrentUserViewModel>(user);
+        }
+
         [HttpPost("updateAvatar")]
         public async Task<IActionResult> UpdateAvatar(IFormFile avatarData)
         {

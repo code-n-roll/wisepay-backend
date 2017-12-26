@@ -49,6 +49,18 @@ namespace WisePay.Web.Account
             return user;
         }
 
+        public async Task<User> RemoveBankCard(int userId)
+        {
+            var user = await _db.Users.FindAsync(userId);
+
+            user.BankActionToken = null;
+            user.BankIdToken = null;
+            user.CardLastFourDigits = null;
+
+            await _db.SaveChangesAsync();
+            return user;
+        }
+
         public async Task UpdateAvatar(int userId, byte[] avatarBytes)
         {
             var user = await _db.Users.FindAsync(userId);
