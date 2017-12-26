@@ -24,7 +24,7 @@ namespace WisePay.Web.Purchases
             _crawlerApi = crawlerApi;
         }
 
-        public async Task<Purchase> CreatePurchase(CreateStoreOrdersModel model, UserStoreOrderModel currentUser)
+        public async Task<Purchase> CreatePurchase(CreateStoreOrdersModel model, int currentUserId)
         {
             var storeOrder = new StoreOrder
             {
@@ -35,7 +35,7 @@ namespace WisePay.Web.Purchases
             var purchase = new Purchase
             {
                 Type = PurchaseType.Store,
-                CreatorId = currentUser.UserId,
+                CreatorId = currentUserId,
                 IsPayedOff = false,
                 Name = model.Name,
                 CreatedAt = DateTime.Now,
@@ -45,11 +45,11 @@ namespace WisePay.Web.Purchases
             _db.Purchases.Add(purchase);
             await _db.SaveChangesAsync();
 
-            model.Users = model.Users.Concat(new[] {currentUser});
+            model.Users = model.Users.Concat(new[] { currentUserId });
             var userPurchases = model.Users.Select(u => new UserPurchase
             {
                 PurchaseId = purchase.Id,
-                UserId = u.UserId,
+                UserId = u,
                 Status = PurchaseStatus.New
             });
 

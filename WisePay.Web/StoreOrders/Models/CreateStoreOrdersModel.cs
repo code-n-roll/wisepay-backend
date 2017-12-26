@@ -12,6 +12,6 @@ namespace WisePay.Web.Purchases.Models
         public string StoreId { get; set; }
 
         [Required]
-        public IEnumerable<UserStoreOrderModel> Users { get; set; }
+        public IEnumerable<int> Users { get; set; }
     }
 }
