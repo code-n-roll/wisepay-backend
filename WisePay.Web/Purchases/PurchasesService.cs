@@ -42,6 +42,7 @@ namespace WisePay.Web.Purchases
         {
             var myPurchases = await _db.Purchases
                 .Where(p => p.CreatorId == userId)
+                .Include(up => up.StoreOrder)
                 .Include(up => up.UserPurchases)
                 .ThenInclude(p => p.User)
                 .Include(up => up.UserPurchases)
@@ -49,8 +50,8 @@ namespace WisePay.Web.Purchases
                 .ToListAsync();
 
             var purchasesWithMe = await _db.UserPurchases
-                .Include(up => up.Purchase)
-                .ThenInclude(p => p.Creator)
+                .Include(up => up.Purchase.Creator)
+                .Include(up => up.Purchase.StoreOrder)
                 .Include(up => up.Items)
                 .Where(up => up.UserId == userId)
                 .Where(up => up.Purchase.CreatorId != userId)
