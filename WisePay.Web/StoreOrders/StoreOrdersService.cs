@@ -5,8 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using WisePay.DataAccess;
 using WisePay.Entities;
+using WisePay.Web.Core.ClientInteraction;
 using WisePay.Web.ExternalServices.Crawler;
 using WisePay.Web.ExternalServices.Crawler.Responses;
+using WisePay.Web.Internals;
 using WisePay.Web.Purchases.Models;
 
 namespace WisePay.Web.Purchases
@@ -61,6 +63,13 @@ namespace WisePay.Web.Purchases
 
         public async Task UpdateOrder(int purchaseId, SubmitOrderItemsModel model, int currentUserId)
         {
+            var purchase = await _db.Purchases
+                .Include(up => up.StoreOrder)
+                .Where(up => up.Id == purchaseId)
+                .FirstAsync();
+            if (purchase.StoreOrder.IsSubmitted)
+                throw new ApiException(401, "Purchase closed for change by creator", ErrorCode.ValidationError);
+
             var userPurchase = await _db.UserPurchases
                 .Where(t => t.PurchaseId == purchaseId)
                 .Where(t => t.UserId == currentUserId)
@@ -90,6 +99,19 @@ namespace WisePay.Web.Purchases
                 .Where(up => up.UserPurchase.UserId == userPurchase.UserId)
                 .Where(up => up.UserPurchase.PurchaseId == userPurchase.PurchaseId)
                 .ToListAsync();
+        }
+
+        public async Task SubmitOrder(int purchaseId, int currentUserId)
+        {
+            var purchase = await _db.Purchases
+                .Include(up => up.StoreOrder)
+                .Where(up => up.Id == purchaseId)
+                .FirstAsync();
+            if (purchase.CreatorId != currentUserId)
+                throw new ApiException(401, "Access denied", ErrorCode.AuthError);
+
+            purchase.StoreOrder.IsSubmitted = true;
+            await _db.SaveChangesAsync();
         }
 
         public async Task<ICollection<StoreResponse>> GetStores()

@@ -24,10 +24,17 @@ namespace WisePay.Web.Purchases
                             Price = item.Price
                         })
                     }))
+                )
+                .ForMember(p => p.StoreOrder, opt => opt.MapFrom(up => new StoreOrderModel
+                    {
+                        IsSubmitted = up.StoreOrder.IsSubmitted,
+                        StoreId = up.StoreOrder.StoreId
+                    })
                 );
 
             CreateMap<UserPurchase, PurchaseWithMe>()
                 .ForMember(p => p.Id, opt => opt.MapFrom(up => up.Purchase.Id))
+                .ForMember(p => p.Type, opt => opt.MapFrom(up => up.Purchase.Type))
                 .ForMember(p => p.CreatedAt, opt => opt.MapFrom(up => up.Purchase.CreatedAt))
                 .ForMember(p => p.CreatorName, opt => opt.MapFrom(up => up.Purchase.Creator.UserName))
                 .ForMember(p => p.Name, opt => opt.MapFrom(up => up.Purchase.Name))
@@ -38,6 +45,12 @@ namespace WisePay.Web.Purchases
                         Number = item.Number,
                         Price = item.Price
                     }))
+                )
+                .ForMember(p => p.StoreOrder, opt => opt.MapFrom(up => new StoreOrderModel
+                    {
+                        IsSubmitted = up.Purchase.StoreOrder.IsSubmitted,
+                        StoreId = up.Purchase.StoreOrder.StoreId
+                    })
                 );
         }
     }

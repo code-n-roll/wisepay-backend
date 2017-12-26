@@ -61,6 +61,13 @@ namespace WisePay.Web.Controllers
             return Ok();
         }
 
+        [HttpPost("{purchaseId}/submit")]
+        public async Task<IActionResult> SubmitOrder(int purchaseId)
+        {
+            await _storeOrdersService.SubmitOrder(purchaseId, _currentUser.Id);
+            return Ok();
+        }
+
         [HttpGet("stores")]
         public async Task<List<StoreResponse>> GetStores()
         {
