@@ -89,7 +89,7 @@ namespace WisePay.Web.Account
 
                     if (!string.IsNullOrEmpty(model.NewPassword))
                     {
-                        if (model.Password != model.PasswordConfirmation)
+                        if (model.NewPassword != model.PasswordConfirmation)
                             throw new ApiException(400, "Passwords don't match", ErrorCode.ValidationError);
 
                         result = await _userManager.ChangePasswordAsync(user, model.Password, model.NewPassword);
