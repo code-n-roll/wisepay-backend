@@ -26,17 +26,20 @@ namespace WisePay.Web.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly ICurrentUserAccessor _currentUser;
+        private readonly AuthTokenService _tokenService;
         private readonly AccountService _accountService;
         private readonly IMapper _mapper;
 
         public AccountController(
             UserManager<User> userManager,
+            AuthTokenService tokenService,
             AccountService accountService,
             IMapper mapper,
             ICurrentUserAccessor currentUser)
         {
             _userManager = userManager;
             _currentUser = currentUser;
+            _tokenService = tokenService;
             _accountService = accountService;
             _mapper = mapper;
         }
@@ -83,6 +86,30 @@ namespace WisePay.Web.Controllers
             var user = await _userManager.FindByIdAsync(_currentUser.Id.ToString());
 
             return _mapper.Map<ProfileViewModel>(user);
+        }
+
+        [HttpPost("password/reset")]
+        [AllowAnonymous]
+        public async Task<IActionResult> RestorePassword([FromBody]ResetPasswordModel model)
+        {
+            await _accountService.ResetPassword(model.Email);
+            return Ok();
+        }
+
+        [HttpPost("password/reset/confirm")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ConfirmResettingPassword([FromBody]ConfirmResetPasswordModel model)
+        {
+            var user = await _accountService.ConfirmResetPassword(model);
+            var token = await _tokenService.GenerateToken(user);
+
+            var response = new
+            {
+                access_token = token,
+                user = _mapper.Map<CurrentUserViewModel>(user)
+            };
+
+            return Json(response);
         }
     }
 }

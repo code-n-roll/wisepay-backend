@@ -18,10 +18,10 @@ namespace WisePay.Web.Controllers
     [Route("api")]
     public class AuthController : Controller
     {
-        private UserManager<User> _userManager;
-        private AuthTokenService _tokenService;
-        private AvatarsService _avatarsService;
-        private IMapper _mapper;
+        private readonly UserManager<User> _userManager;
+        private readonly AuthTokenService _tokenService;
+        private readonly AvatarsService _avatarsService;
+        private readonly IMapper _mapper;
 
         public AuthController(
             UserManager<User> userManager,

@@ -75,7 +75,7 @@ namespace WisePay
                 });
 
             services.AddAutoMapper(GetType().Assembly);
-            services.AddInAppServices();
+            services.AddInAppServices(Configuration);
 
             services.AddMvc(options =>
             {
