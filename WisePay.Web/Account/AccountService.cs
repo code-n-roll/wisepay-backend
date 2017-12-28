@@ -143,6 +143,17 @@ namespace WisePay.Web.Account
             }
         }
 
+        public async Task<bool> VerifyResetToken(VerifyResetTokenModel model)
+        {
+            var user = await _userManager.FindByIdAsync(model.Id.ToString());
+
+            if (user == null)
+                throw new ApiException(404, "User not found", ErrorCode.InvalidCredentials);
+
+            var correctToken = Url.DecodeQueryParamValue(model.Token);
+            return await _userManager.VerifyUserTokenAsync(user, "Default", "ResetPassword", correctToken);
+        }
+
         public async Task<User> ConfirmResetPassword(ConfirmResetPasswordModel model)
         {
             var user = await _userManager.FindByIdAsync(model.Id.ToString());

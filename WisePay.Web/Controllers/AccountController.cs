@@ -90,7 +90,7 @@ namespace WisePay.Web.Controllers
 
         [HttpPost("password/reset")]
         [AllowAnonymous]
-        public async Task<IActionResult> RestorePassword([FromBody]ResetPasswordModel model)
+        public async Task<IActionResult> ResetPassword([FromBody]ResetPasswordModel model)
         {
             await _accountService.ResetPassword(model.Email);
             return Ok();
@@ -110,6 +110,18 @@ namespace WisePay.Web.Controllers
             };
 
             return Json(response);
+        }
+
+        [HttpPost("password/reset/verify")]
+        [AllowAnonymous]
+        public async Task<IActionResult> VerifyResetToken([FromBody]VerifyResetTokenModel model)
+        {
+            var isValidToken = await _accountService.VerifyResetToken(model);
+
+            if (!isValidToken)
+                throw new ApiException(400, "InvalidToken", ErrorCode.InvalidCredentials);
+
+            return Ok();
         }
     }
 }
