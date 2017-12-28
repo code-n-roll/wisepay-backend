@@ -1,4 +1,4 @@
-﻿namespace WisePay.Web.Purchases.Models
+namespace WisePay.Web.Purchases.Models
 {
     public class StoreOrderModel
     {

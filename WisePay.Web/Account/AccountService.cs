@@ -30,7 +30,7 @@ namespace WisePay.Web.Account
         private readonly UserManager<User> _userManager;
         private readonly EmailService _emailService;
         private readonly IConfiguration _config;
-        
+
         public AccountService(
             WiseContext db,
             BankApi bankApi,
