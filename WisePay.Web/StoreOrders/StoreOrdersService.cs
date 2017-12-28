@@ -61,16 +61,18 @@ namespace WisePay.Web.Purchases
             return purchase;
         }
 
-        public async Task UpdateOrder(int purchaseId, SubmitOrderItemsModel model, int currentUserId)
+        public async Task<UserPurchase> UpdateOrder
+            (int purchaseId, SubmitOrderItemsModel model, int currentUserId)
         {
             var purchase = await _db.Purchases
-                .Include(up => up.StoreOrder)
+                .Include(p => p.StoreOrder)
                 .Where(up => up.Id == purchaseId)
                 .FirstAsync();
             if (purchase.StoreOrder.IsSubmitted)
                 throw new ApiException(401, "Purchase closed for change by creator", ErrorCode.ValidationError);
 
             var userPurchase = await _db.UserPurchases
+                .Include(up => up.User)
                 .Where(t => t.PurchaseId == purchaseId)
                 .Where(t => t.UserId == currentUserId)
                 .FirstAsync();
@@ -90,15 +92,13 @@ namespace WisePay.Web.Purchases
                 Price = u.Price
             });
 
+            userPurchase.Sum = items.Sum(item => item.Price);
+
             _db.UserPurchaseItems.RemoveRange(prevItems);
             _db.UserPurchaseItems.AddRange(items);
             await _db.SaveChangesAsync();
 
-            userPurchase.Items = await _db.UserPurchaseItems
-                .Include(up => up.UserPurchase)
-                .Where(up => up.UserPurchase.UserId == userPurchase.UserId)
-                .Where(up => up.UserPurchase.PurchaseId == userPurchase.PurchaseId)
-                .ToListAsync();
+            return userPurchase;
         }
 
         public async Task SubmitOrder(int purchaseId, int currentUserId)
