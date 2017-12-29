@@ -13,6 +13,6 @@ namespace WisePay.Entities
         public decimal? Sum { get; set; }
         public PurchaseStatus Status { get; set; }
 
-        public ICollection<UserPurchaseItem> Items { get; set; } = new HashSet<UserPurchaseItem>();
+        public ICollection<UserPurchaseItem> Items { get; set; } = new List<UserPurchaseItem>();
     }
 }
