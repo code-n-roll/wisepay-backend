@@ -415,7 +415,8 @@ namespace WisePay.DataAccess.Migrations
                 {
                     b.HasOne("WisePay.Entities.UserPurchase", "UserPurchase")
                         .WithMany("Items")
-                        .HasForeignKey("UserPurchaseUserId", "UserPurchasePurchaseId");
+                        .HasForeignKey("UserPurchaseUserId", "UserPurchasePurchaseId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("WisePay.Entities.UserTeam", b =>

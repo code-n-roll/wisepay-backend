@@ -10,6 +10,7 @@ using WisePay.Web.Account;
 using WisePay.Web.Auth;
 using WisePay.Web.Avatars;
 using WisePay.Web.Core.Emails;
+using WisePay.Web.Debts;
 using WisePay.Web.ExternalServices;
 using WisePay.Web.ExternalServices.Bank;
 using WisePay.Web.ExternalServices.Crawler;
@@ -30,6 +31,7 @@ namespace WisePay.Web.Internals
             services.AddScoped<AccountService>();
             services.AddScoped<AvatarsService>();
             services.AddScoped<StoreOrdersService>();
+            services.AddScoped<DebtsService>();
 
             services.AddScoped<BankApi>();
             services.AddScoped<CrawlerApi>();

@@ -45,7 +45,6 @@ namespace WisePay.Web.Purchases
             _db.Purchases.Add(purchase);
             await _db.SaveChangesAsync();
 
-            model.Users = model.Users.Concat(new[] { currentUserId });
             var userPurchases = model.Users.Select(u => new UserPurchase
             {
                 PurchaseId = purchase.Id,

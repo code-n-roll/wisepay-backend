@@ -32,6 +32,11 @@ namespace WisePay.DataAccess
             builder.Entity<UserPurchase>()
                 .ToTable("UserPurchases")
                 .HasKey(t => new { t.UserId, t.PurchaseId });
+
+            builder.Entity<UserPurchase>()
+                        .HasMany(x => x.Items)
+                        .WithOne(x => x.UserPurchase)
+                        .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
