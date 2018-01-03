@@ -46,6 +46,7 @@ namespace WisePay
                     {
                         RequiredLength = 6,
                         RequireNonAlphanumeric = false,
+                        RequireDigit = false,
                         RequireUppercase = false
                     };
 

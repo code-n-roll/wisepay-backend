@@ -1,6 +1,7 @@
 using System.Linq;
 using AutoMapper;
 using WisePay.Entities;
+using WisePay.Web.Avatars;
 using WisePay.Web.Purchases.Models;
 
 namespace WisePay.Web.Purchases
@@ -9,22 +10,19 @@ namespace WisePay.Web.Purchases
     {
         public MappingProfile()
         {
-            CreateMap<Purchase, MyPurchase>()
-                .ForMember(p => p.Users,
-                    opt => opt.MapFrom(t => t.UserPurchases.Select(up => new UserPurchaseInfo
+            CreateMap<UserPurchase, UserPurchaseInfo>()
+                .ForMember(up => up.AvatarUrl, opt => opt.ResolveUsing<AvatarUrlResolver>())
+                .ForMember(up => up.Username, opt => opt.MapFrom(up => up.User.UserName))
+                .ForMember(up => up.Items,
+                    opt => opt.MapFrom(up => up.Items.Select(item => new UserPurchaseItemInfo
                     {
-                        Sum = up.Sum,
-                        Status = up.Status,
-                        UserId = up.UserId,
-                        Username = up.User != null ? up.User.UserName : null,
-                        Items = up.Items.Select(item => new UserPurchaseItemInfo
-                        {
-                            ItemId = item.ItemId,
-                            Number = item.Number,
-                            Price = item.Price
-                        })
-                    }))
-                )
+                        ItemId = item.ItemId,
+                        Number = item.Number,
+                        Price = item.Price,
+                    })));
+
+            CreateMap<Purchase, MyPurchase>()
+                .ForMember(p => p.Users, opt => opt.MapFrom(p => p.UserPurchases))
                 .ForMember(p => p.StoreOrder, opt => opt.MapFrom(up => new StoreOrderModel
                     {
                         IsSubmitted = up.StoreOrder.IsSubmitted,
@@ -52,6 +50,22 @@ namespace WisePay.Web.Purchases
                         StoreId = up.Purchase.StoreOrder.StoreId
                     })
                 );
+        }
+    }
+
+    // TODO map 
+    public class AvatarUrlResolver : IValueResolver<UserPurchase, object, string>
+    {
+        private readonly AvatarsService _avatarsService;
+
+        public AvatarUrlResolver(AvatarsService avatarsService)
+        {
+            _avatarsService = avatarsService;
+        }
+
+        public string Resolve(UserPurchase source, object destination, string destMember, ResolutionContext context)
+        {
+            return _avatarsService.GetFullAvatarUrl(source.User?.AvatarPath);
         }
     }
 }
