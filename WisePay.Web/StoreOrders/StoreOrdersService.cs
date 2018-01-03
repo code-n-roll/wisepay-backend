@@ -45,7 +45,9 @@ namespace WisePay.Web.Purchases
             _db.Purchases.Add(purchase);
             await _db.SaveChangesAsync();
 
-            var userPurchases = model.Users.Select(u => new UserPurchase
+            var userPurchases = model.Users
+                .Union(new List<int> { currentUserId })
+                .Select(u => new UserPurchase
             {
                 PurchaseId = purchase.Id,
                 UserId = u,
@@ -55,9 +57,14 @@ namespace WisePay.Web.Purchases
             _db.UserPurchases.AddRange(userPurchases);
             await _db.SaveChangesAsync();
 
-            purchase.UserPurchases = new List<UserPurchase>(userPurchases);
-
-            return purchase;
+            return await _db.Purchases
+                .Include(up => up.StoreOrder)
+                .Include(up => up.UserPurchases)
+                .ThenInclude(p => p.User)
+                .Include(up => up.UserPurchases)
+                .ThenInclude(p => p.Items)
+                .Where(p => p.Id == purchase.Id)
+                .FirstOrDefaultAsync();
         }
 
         public async Task<UserPurchase> UpdateOrder
