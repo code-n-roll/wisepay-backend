@@ -70,13 +70,13 @@ namespace WisePay.Web.Debts
                     });
 
                     totalStats.DebtToMe += userTotalDebt;
-                } 
+                }
             }
 
             foreach (var purchasesWithMe in purchasesWithMeGroups)
             {
                 var userPurchase = purchasesWithMe.First();
-                var myTotalDebt = purchasesWithMe
+                var  myTotalDebt = purchasesWithMe
                     .Aggregate<UserPurchase, decimal>(0, (sum, u) => sum + (u.Sum ?? 0));
 
                 if (myTotalDebt != 0)
@@ -98,7 +98,19 @@ namespace WisePay.Web.Debts
                 }
             }
 
-            return (users.Values.ToList(), totalStats);
+            var rawUsers = users.Values.ToList();
+            var allUsers = await _db.Users.ToListAsync();
+            var includedUsers = users.Values.Select(raw => raw.User.Id).ToHashSet();
+            rawUsers.AddRange(from user in allUsers
+                where !includedUsers.Contains(user.Id)
+                select new UserWithDebtRaw
+                {
+                    User = user,
+                    Debt = 0
+                });
+
+
+            return (rawUsers, totalStats);
         }
     }
 }
