@@ -72,16 +72,17 @@ namespace WisePay.Web.Purchases
         {
             var purchase = await _db.Purchases
                 .Include(p => p.StoreOrder)
+                .Include(p => p.UserPurchases)
+                    .ThenInclude(up => up.User)
                 .Where(up => up.Id == purchaseId)
                 .FirstAsync();
+
             if (purchase.StoreOrder.IsSubmitted)
                 throw new ApiException(401, "Purchase closed for change by creator", ErrorCode.ValidationError);
 
-            var userPurchase = await _db.UserPurchases
-                .Include(up => up.User)
-                .Where(t => t.PurchaseId == purchaseId)
+            var userPurchase = purchase.UserPurchases
                 .Where(t => t.UserId == currentUserId)
-                .FirstAsync();
+                .FirstOrDefault();
 
             var prevItems = await _db.UserPurchaseItems
                 .Include(t => t.UserPurchase)
@@ -98,7 +99,13 @@ namespace WisePay.Web.Purchases
                 Price = u.Price
             });
 
+            var prevUserPurchaseSum = userPurchase.Sum;
             userPurchase.Sum = items.Sum(item => item.Price);
+
+            if (purchase.CreatorId != currentUserId)
+            {
+                purchase.TotalSum = (purchase.TotalSum ?? 0) - (prevUserPurchaseSum ?? 0) + userPurchase.Sum;
+            }
 
             _db.UserPurchaseItems.RemoveRange(prevItems);
             _db.UserPurchaseItems.AddRange(items);
@@ -110,11 +117,23 @@ namespace WisePay.Web.Purchases
         public async Task SubmitOrder(int purchaseId, int currentUserId)
         {
             var purchase = await _db.Purchases
-                .Include(up => up.StoreOrder)
+                .Include(p => p.StoreOrder)
+                .Include(p => p.UserPurchases)
+                    .ThenInclude(up => up.Items)
                 .Where(up => up.Id == purchaseId)
                 .FirstAsync();
+
             if (purchase.CreatorId != currentUserId)
                 throw new ApiException(401, "Access denied", ErrorCode.AuthError);
+
+            if (purchase.StoreOrder.IsSubmitted)
+                throw new ApiException(400, "Order is already submitted", ErrorCode.InvalidAction);
+
+            var emptyUserPurchases = purchase
+                .UserPurchases
+                .Where(up => up.Items.Count == 0);
+
+            _db.UserPurchases.RemoveRange(emptyUserPurchases);
 
             purchase.StoreOrder.IsSubmitted = true;
             await _db.SaveChangesAsync();

@@ -101,7 +101,7 @@ namespace WisePay.Web.Debts
             }
 
             var rawUsers = users.Values.ToList();
-            var allUsers = await _db.Users.ToListAsync();
+            var allUsers = await _db.Users.Where(u => u.Id != currentUser.Id).ToListAsync();
             var includedUsers = users.Values.Select(raw => raw.User.Id).ToHashSet();
             rawUsers.AddRange(from user in allUsers
                 where !includedUsers.Contains(user.Id)

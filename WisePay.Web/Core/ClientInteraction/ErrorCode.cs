@@ -16,6 +16,7 @@ namespace WisePay.Web.Core.ClientInteraction
 
         NotFound,
         InvalidRequestFormat,
-        AlreadyExists
+        AlreadyExists,
+        InvalidAction
     }
 }
