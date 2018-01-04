@@ -114,5 +114,35 @@ namespace WisePay.Web.Debts
 
             return (rawUsers, totalStats);
         }
+
+        public async Task ClearDebt(int currentUserId, int recipientId) {
+            var myPurchases = await GetCommonPurchases(currentUserId, recipientId);
+            var purchasesWithMe = await GetCommonPurchases(recipientId, currentUserId);
+
+            var myTotalDebt = purchasesWithMe.Sum(p => p.Sum);
+            var totalDebtWithMe = myPurchases.Sum(p => p.Sum);
+
+            var sumToPay = (myTotalDebt ?? 0) - (totalDebtWithMe ?? 0);
+            if (sumToPay <= 0)
+                throw new ApiException(400, "You owe nothing", ErrorCode.InvalidAction);
+
+            await _purchasesService.SendMoney(currentUserId, recipientId, sumToPay);
+
+            foreach (var purchase in myPurchases.Concat(purchasesWithMe))
+            {
+                purchase.Status = PurchaseStatus.Payed;
+            }
+
+            await _db.SaveChangesAsync();
+        }
+
+        private async Task<IEnumerable<UserPurchase>> GetCommonPurchases(int creatorId, int participantId)
+        {
+            return await _db.UserPurchases
+                .Include(up => up.Purchase)
+                .Where(up => up.Purchase.CreatorId == creatorId)
+                .Where(up => up.UserId == participantId)
+                .ToListAsync();
+        }
     }
 }

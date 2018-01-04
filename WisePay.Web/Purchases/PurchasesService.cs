@@ -127,16 +127,7 @@ namespace WisePay.Web.Purchases
                 ?? throw new ApiException(400, "This purchase required user-entered sum",
                     ErrorCode.InvalidRequestFormat);
 
-            var recipientIdToken = userPurchase.Purchase.Creator.BankIdToken;
-            var myActionToken = userPurchase.User.BankActionToken;
-
-            if (recipientIdToken == null)
-                throw new ApiException(400, "Recipient didn't bind bank card");
-
-            if (myActionToken == null)
-                throw new ApiException(400, "You don't have any bank card");
-
-            await _bankApi.SendMoney(myActionToken, recipientIdToken, sumToPay);
+            await SendMoney(userPurchase.Purchase.Creator, userPurchase.User, sumToPay);
 
             _db.PaymentHistory.Add(new PaymentHistoryItem
             {
@@ -177,16 +168,21 @@ namespace WisePay.Web.Purchases
             var me = await _db.Users.FindAsync(currentUserId);
             var recipient = await _db.Users.FindAsync(recipientId);
 
+            await SendMoney(me, recipient, sum);
+        }
+
+        public async Task SendMoney(User currentUser, User recipient, decimal sum)
+        {
             if (recipient == null)
                 throw new ApiException(404, "User not found", ErrorCode.NotFound);
 
             if (recipient.BankIdToken == null)
                 throw new ApiException(400, "Recipient haven't added any bank card");
 
-            if (me.BankActionToken == null)
+            if (currentUser.BankActionToken == null)
                 throw new ApiException(400, "You don't have any bank card");
 
-            await _bankApi.SendMoney(me.BankActionToken, recipient.BankIdToken, sum);
+            await _bankApi.SendMoney(currentUser.BankActionToken, recipient.BankIdToken, sum);
         }
 
         private Task<UserPurchase> GetUserPurchase(int purchaseId, int currentUserId)

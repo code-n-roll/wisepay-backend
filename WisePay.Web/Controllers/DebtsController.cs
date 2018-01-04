@@ -44,5 +44,12 @@ namespace WisePay.Web.Controllers
 
             return response;
         }
+
+        [HttpPost("clear")]
+        public async Task<IActionResult> ClearDebt([FromBody]ClearDebtModel model)
+        {
+            await _debtsService.ClearDebt(_currentUser.Id, model.UserId);
+            return Ok();
+        }
     }
 }
