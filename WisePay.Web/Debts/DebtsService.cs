@@ -38,6 +38,7 @@ namespace WisePay.Web.Debts
 
             var myPurchasesGroups = await _db.UserPurchases
                 .Include(up => up.User)
+                .Where(up => up.Status == PurchaseStatus.New)
                 .Where(up => up.Purchase.CreatorId == userId &&
                     up.UserId != userId)
                 .GroupBy(up => up.UserId)
@@ -46,6 +47,7 @@ namespace WisePay.Web.Debts
             var purchasesWithMeGroups = await _db.UserPurchases
                 .Include(up => up.Purchase)
                     .ThenInclude(p => p.Creator)
+                .Where(up => up.Status == PurchaseStatus.New)
                 .Where(up => up.UserId == userId &&
                     up.Purchase.CreatorId != userId)
                 .GroupBy(up => up.Purchase.CreatorId)

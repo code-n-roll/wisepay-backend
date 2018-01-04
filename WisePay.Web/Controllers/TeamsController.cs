@@ -112,5 +112,19 @@ namespace WisePay.Web.Controllers
 
             return Ok();
         }
+
+        [HttpDelete("{teamId}")]
+        public async Task<IActionResult> DeleteTeam(int teamId)
+        {
+            await _teamsService.DeleteTeam(teamId, _currentUser.Id);
+            return Ok();
+        }
+
+        [HttpPost("{teamId}/leave")]
+        public async Task<IActionResult> LeaveTeam(int teamId)
+        {
+            await _teamsService.LeaveTeam(teamId, _currentUser.Id);
+            return Ok();
+        }
     }
 }

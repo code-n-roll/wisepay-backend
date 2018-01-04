@@ -114,5 +114,43 @@ namespace WisePay.Web.Teams
 
             await _db.SaveChangesAsync();
         }
+
+        public async Task DeleteTeam(int teamId, int currentUserId)
+        {
+            var team = await _db.Teams.FindAsync(teamId);
+            if (team == null)
+                throw new ApiException(400, "Team not found", ErrorCode.NotFound);
+
+            if (team.AdminId != currentUserId)
+                throw new ApiException(401, "Access denied", ErrorCode.AuthError);
+
+            _db.Teams.Remove(team);
+            await _db.SaveChangesAsync();
+        }
+
+        public async Task LeaveTeam(int teamId, int currentUserId)
+        {
+            var team = await _db.Teams
+                .Include(t => t.UserTeams)
+                .Where(t => t.Id == teamId)
+                .FirstOrDefaultAsync();
+
+            if (team == null)
+                throw new ApiException(400, "Team not found", ErrorCode.NotFound);
+
+            if (currentUserId == team.AdminId)
+                throw new ApiException(400, "Can't leave team where you are an admin",
+                    ErrorCode.AuthError);
+
+            var userTeam = team.UserTeams
+                .Where(ut => ut.UserId == currentUserId)
+                .FirstOrDefault();
+
+            if (userTeam == null)
+                throw new ApiException(400, "Not a member of the team", ErrorCode.AuthError);
+
+            _db.UserTeams.Remove(userTeam);
+            await _db.SaveChangesAsync();
+        }
     }
 }
