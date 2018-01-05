@@ -73,10 +73,6 @@ namespace WisePay.Web.Controllers
             var result = await _userManager.CreateAsync(newUser, registerModel.Password);
             ErrorResultsHandler.ThrowIfIdentityError(result);
 
-            // var avatarPath = _avatarsService.GenerateAndSaveAvatar(newUser.UserName);
-            // newUser.AvatarPath = avatarPath;
-            // await _userManager.UpdateAsync(newUser);
-
             var response = new
             {
                 access_token = await _tokenService.GenerateToken(newUser),

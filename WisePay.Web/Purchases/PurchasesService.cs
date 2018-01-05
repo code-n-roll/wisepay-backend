@@ -127,7 +127,7 @@ namespace WisePay.Web.Purchases
                 ?? throw new ApiException(400, "This purchase required user-entered sum",
                     ErrorCode.InvalidRequestFormat);
 
-            await SendMoney(userPurchase.Purchase.Creator, userPurchase.User, sumToPay);
+            await SendMoney(userPurchase.User, userPurchase.Purchase.Creator, sumToPay);
 
             _db.PaymentHistory.Add(new PaymentHistoryItem
             {
@@ -176,11 +176,11 @@ namespace WisePay.Web.Purchases
             if (recipient == null)
                 throw new ApiException(404, "User not found", ErrorCode.NotFound);
 
-            if (recipient.BankIdToken == null)
-                throw new ApiException(400, "Recipient haven't added any bank card");
-
             if (currentUser.BankActionToken == null)
                 throw new ApiException(400, "You don't have any bank card");
+
+            if (recipient.BankIdToken == null)
+                throw new ApiException(400, "Recipient haven't added any bank card");
 
             await _bankApi.SendMoney(currentUser.BankActionToken, recipient.BankIdToken, sum);
         }

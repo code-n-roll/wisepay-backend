@@ -44,6 +44,7 @@ namespace WisePay
                 .AddIdentity<User, Role>(options => {
                     options.Password = new PasswordOptions
                     {
+                        RequireLowercase = false,
                         RequiredLength = 6,
                         RequireNonAlphanumeric = false,
                         RequireDigit = false,
