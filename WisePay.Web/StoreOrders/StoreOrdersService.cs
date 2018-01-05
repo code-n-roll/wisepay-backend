@@ -133,6 +133,9 @@ namespace WisePay.Web.Purchases
                 .UserPurchases
                 .Where(up => up.Items.Count == 0);
 
+            if (emptyUserPurchases.Count() == purchase.UserPurchases.Count)
+                throw new ApiException(400, "Order is empty", ErrorCode.InvalidAction);
+
             _db.UserPurchases.RemoveRange(emptyUserPurchases);
 
             purchase.StoreOrder.IsSubmitted = true;

@@ -142,6 +142,7 @@ namespace WisePay.Web.Debts
                 .Include(up => up.Purchase)
                 .Where(up => up.Purchase.CreatorId == creatorId)
                 .Where(up => up.UserId == participantId)
+                .Where(up => up.Status == PurchaseStatus.New)
                 .ToListAsync();
         }
     }
