@@ -88,7 +88,7 @@ namespace WisePay.Web.Purchases
                 IsPayedOff = false,
                 Name = model.Name,
                 TotalSum = model.TotalSum,
-                CreatedAt = DateTime.Now
+                CreatedAt = DateTime.UtcNow
             };
 
             _db.Purchases.Add(purchase);
