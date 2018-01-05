@@ -85,11 +85,16 @@ namespace WisePay.Web.Teams
 
             team.Name = string.IsNullOrWhiteSpace(model.Name) ? team.Name : model.Name;
 
+            await UpdateTeamUsers(teamId, model.UserIds, currentUserId);
+
             await _db.SaveChangesAsync();
         }
 
-        public async Task UpdateTeamUsers(int teamId, UpdateTeamUsersModel model, int currentUserId)
+        private async Task UpdateTeamUsers(int teamId, IEnumerable<int> userIds, int currentUserId)
         {
+            if (userIds == null)
+                return;
+
             var team = await _db.Teams
                 .Include(t => t.UserTeams)
                 .Where(t => t.Id == teamId)
@@ -100,13 +105,13 @@ namespace WisePay.Web.Teams
             if (team.AdminId != currentUserId)
                 throw new ApiException(401, "Access denied", ErrorCode.AuthError);
 
-            if (!model.UserIds.Contains(team.AdminId))
+            if (!userIds.Contains(team.AdminId))
                 throw new ApiException(400, "Can't delete admin from team", ErrorCode.InvalidRequestFormat);
 
             _db.UserTeams.RemoveRange(team.UserTeams);
             await _db.SaveChangesAsync();
 
-            _db.UserTeams.AddRange(model.UserIds.Select(id => new UserTeam
+            _db.UserTeams.AddRange(userIds.Select(id => new UserTeam
             {
                 UserId = id,
                 TeamId = team.Id

@@ -102,16 +102,16 @@ namespace WisePay.Web.Controllers
             return Ok();
         }
 
-        [HttpPut("{teamId}/users")]
-        public async Task<IActionResult> UpdateTeamUsers(int teamId, [FromBody]UpdateTeamUsersModel model)
-        {
-            if (model == null || model.UserIds == null)
-                throw new ApiException(400, "Invalid request body", ErrorCode.InvalidRequestFormat);
-
-            await _teamsService.UpdateTeamUsers(teamId, model, _currentUser.Id);
-
-            return Ok();
-        }
+//        [HttpPut("{teamId}/users")]
+//        public async Task<IActionResult> UpdateTeamUsers(int teamId, [FromBody]UpdateTeamUsersModel model)
+//        {
+//            if (model == null || model.UserIds == null)
+//                throw new ApiException(400, "Invalid request body", ErrorCode.InvalidRequestFormat);
+//
+//            await _teamsService.UpdateTeamUsers(teamId, model, _currentUser.Id);
+//
+//            return Ok();
+//        }
 
         [HttpDelete("{teamId}")]
         public async Task<IActionResult> DeleteTeam(int teamId)
