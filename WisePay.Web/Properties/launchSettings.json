@@ -3,26 +3,33 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:5000/",
+      "applicationUrl": "http://localhost:8000/",
       "sslPort": 0
     }
   },
-  "profiles": {
-    "IIS Express": {
-      "commandName": "IISExpress",
-      "launchUrl": "api/values",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
-    },
-    "WisePay": {
-      "commandName": "Project",
-      "launchUrl": "api/values",
-      "environmentVariables": {
-        "DOTNET_CLI_TELEMETRY_OPTOUT": "1",
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      },
-      "applicationUrl": "http://localhost:5000/"
+    "profiles": {
+        "IIS Express": {
+            "commandName": "IISExpress",
+            "environmentVariables": {
+                "DOTNET_CLI_TELEMETRY_OPTOUT": "1",
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            }
+        },
+        "WisePay": {
+            "commandName": "Project",
+            "environmentVariables": {
+                "DOTNET_CLI_TELEMETRY_OPTOUT": "1",
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "applicationUrl": "http://localhost:8000/"
+        },
+        "WisePayAzure": {
+            "commandName": "Project",
+            "environmentVariables": {
+                "DOTNET_CLI_TELEMETRY_OPTOUT": "1",
+                "ASPNETCORE_ENVIRONMENT": "Production"
+            },
+            "applicationUrl": "http://localhost:8000/"
+        }
     }
-  }
 }

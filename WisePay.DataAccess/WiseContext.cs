@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using WisePay.Entities;
@@ -10,9 +10,33 @@ namespace WisePay.DataAccess
     {
         public WiseContext(DbContextOptions<WiseContext> options) : base(options) { }
 
+        public DbSet<Purchase> Purchases { get; set; }
+        public DbSet<StoreOrder> StoreOrders { get; set; }
+        public DbSet<Team> Teams { get; set; }
+
+        // Connection tables
+        public DbSet<UserTeam> UserTeams { get; set; }
+        public DbSet<UserPurchase> UserPurchases { get; set; }
+        public DbSet<UserPurchaseItem> UserPurchaseItems { get; set; }
+
+        public DbSet<PaymentHistoryItem> PaymentHistory { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
+            builder.Entity<UserTeam>()
+                .ToTable("UserTeams")
+                .HasKey(t => new { t.UserId, t.TeamId });
+
+            builder.Entity<UserPurchase>()
+                .ToTable("UserPurchases")
+                .HasKey(t => new { t.UserId, t.PurchaseId });
+
+            builder.Entity<UserPurchase>()
+                        .HasMany(x => x.Items)
+                        .WithOne(x => x.UserPurchase)
+                        .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
